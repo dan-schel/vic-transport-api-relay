@@ -8,12 +8,22 @@ const refreshInterval = 1000 * 60 * 60 * 12;
 async function main() {
   console.log(`Downloading initial gtfs.zip...`);
   await downloadGtfs();
+  let gtfsAge = new Date();
 
   // Create express server to serve gtfs.zip and other static files.
   const app = express();
   const port = env.PORT;
   app.use(express.static("./public"));
   app.use(express.static("./data"));
+
+  app.get("/", (req, res) => {
+    res.json({
+      status: "ok",
+      gtfs: {
+        age: gtfsAge.toISOString(),
+      },
+    });
+  });
   app.listen(port, () => {
     console.log(`Listening on port ${port}.`);
   });
@@ -21,10 +31,14 @@ async function main() {
   // Periodically refresh gtfs.zip.
   setTimeout(() => {
     console.log(`Refreshing gtfs.zip...`);
-    downloadGtfs().catch((err) => {
-      console.warn("Failed to refresh gtfs.zip. Retaining old data.");
-      console.warn(err);
-    });
+    downloadGtfs()
+      .then(() => {
+        gtfsAge = new Date();
+      })
+      .catch((err) => {
+        console.warn("Failed to refresh gtfs.zip. Retaining old data.");
+        console.warn(err);
+      });
   }, refreshInterval);
 }
 
