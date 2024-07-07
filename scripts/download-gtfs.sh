@@ -10,11 +10,9 @@ set -euo pipefail
 gtfs_url="https://data.ptv.vic.gov.au/downloads/gtfs.zip"
 destination="data/gtfs.zip"
 
-# generate temp folder name using current time
-
-
 temp_folder=".temp-$(date +%s%3N)"
 mkdir $temp_folder
+mkdir -p $(dirname $destination)
 
 echo "Downloading \"$gtfs_url\"..."
 curl --progress-bar -o "$temp_folder/gtfs.zip" "$gtfs_url"
