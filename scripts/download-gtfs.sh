@@ -7,8 +7,8 @@
 # saves the result to `public/gtfs.zip`.
 
 set -euo pipefail
-destination="data/gtfs.zip"
 gtfs_url="https://data.ptv.vic.gov.au/downloads/gtfs.zip"
+destination="data/gtfs.zip"
 
 temp_folder=".temp-$(uuidgen)"
 mkdir $temp_folder
