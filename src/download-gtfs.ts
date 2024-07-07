@@ -6,6 +6,6 @@ const exec = promisify(execCallback);
 export async function downloadGtfs() {
   const result = await exec("scripts/download-gtfs.sh");
   console.log("---");
-  console.log(result.stdout);
+  console.log(result.stdout.trim());
   console.log("---");
 }
