@@ -1,45 +1,46 @@
 import express from "express";
 import { env } from "./env";
-import { downloadGtfs } from "./download-gtfs";
-
-// Refresh the gtfs.zip every 12 hours.
-const refreshInterval = 1000 * 60 * 60 * 12;
+import { authMiddleware } from "./auth";
+import { GtfsDataService } from "./gtfs";
 
 async function main() {
-  console.log(`Downloading initial gtfs.zip...`);
-  await downloadGtfs();
-  let gtfsAge = new Date();
+  // Declare which data services to use.
+  const dataServices = {
+    gtfs: new GtfsDataService(),
+  };
+
+  // Initialize all data services.
+  await Promise.all(
+    Object.values(dataServices).map((service) => service.init())
+  );
 
   // Create express server to serve gtfs.zip and other static files.
   const app = express();
   const port = env.PORT;
-  app.use(express.static("./public"));
-  app.use(express.static("./data"));
 
-  app.get("/", (req, res) => {
+  // Allow anyone to access the public folder (so robots.txt works).
+  app.use(express.static("./public"));
+
+  // Requests to the root path will return the status of all data services.
+  app.get("/", (req: express.Request, res: express.Response) => {
     res.json({
       status: "ok",
-      gtfs: {
-        age: gtfsAge.toISOString(),
-      },
+
+      ...Object.entries(dataServices)
+        .map(([key, value]) => ({ [key]: value.getStatus() }))
+        .reduce((acc, val) => ({ ...acc, ...val }), {}),
     });
   });
+
+  // Block access to the data folder unless the request is authorized.
+  app.use(authMiddleware, express.static("./data"));
+
+  // Start listening on the specified port and run onListening for each data
+  // service.
   app.listen(port, () => {
     console.log(`Listening on port ${port}.`);
   });
-
-  // Periodically refresh gtfs.zip.
-  setTimeout(() => {
-    console.log(`Refreshing gtfs.zip...`);
-    downloadGtfs()
-      .then(() => {
-        gtfsAge = new Date();
-      })
-      .catch((err) => {
-        console.warn("Failed to refresh gtfs.zip. Retaining old data.");
-        console.warn(err);
-      });
-  }, refreshInterval);
+  Object.values(dataServices).forEach((service) => service.onListening());
 }
 
 main();
