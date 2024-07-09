@@ -1,8 +1,6 @@
+import { env } from "../env";
 import { DataService } from "../service";
 import { downloadGtfs } from "./utils";
-
-// Refresh the gtfs.zip every 6 hours.
-const refreshInterval = 1000 * 60 * 60 * 6;
 
 export class GtfsDataService extends DataService {
   private _attemptedAt: Date | null = null;
@@ -23,7 +21,10 @@ export class GtfsDataService extends DataService {
 
   onListening(): void {
     // Periodically refresh gtfs.zip.
-    setInterval(() => this._refreshData(), refreshInterval);
+    setInterval(
+      () => this._refreshData(),
+      env.GTFS_REFRESH_HOURS * 60 * 60 * 1000
+    );
   }
 
   getStatus(): object {
