@@ -8,10 +8,15 @@ export async function downloadGtfs() {
   console.log("---");
   console.log(result.stdout.trim());
   console.log("---");
-}
 
-export async function computeSha256() {
-  const result = await exec("sha256sum data/gtfs.zip");
-  const hash = result.stdout.trim().split(" ")[0].trim();
+  const line = result.stdout
+    .split("\n")
+    .find((line) => line.startsWith("The hash is:"));
+
+  if (line == null) {
+    throw new Error("Hash not given in download-gtfs.sh output.");
+  }
+
+  const hash = line.replace("The hash is: ", "").trim();
   return hash;
 }

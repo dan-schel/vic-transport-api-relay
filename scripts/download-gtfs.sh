@@ -26,6 +26,9 @@ mkdir $temp_folder/suburban
 unzip -q $temp_folder/1/google_transit.zip -d $temp_folder/regional
 unzip -q $temp_folder/2/google_transit.zip -d $temp_folder/suburban
 
+hash=$(cat $temp_folder/regional/calendar.txt $temp_folder/regional/calendar_dates.txt $temp_folder/regional/stop_times.txt $temp_folder/regional/trips.txt $temp_folder/suburban/calendar.txt $temp_folder/suburban/calendar_dates.txt $temp_folder/suburban/stop_times.txt $temp_folder/suburban/trips.txt | sha256sum | awk '{print $1;}')
+echo "The hash is: $hash"
+
 echo "Create \"$temp_folder/regional.zip\"..."
 (
   cd $temp_folder/regional
