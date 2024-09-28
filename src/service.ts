@@ -35,8 +35,8 @@ export abstract class PollingDataService extends DataService {
 
   override getStatus(): object {
     return {
-      hash: this._hash,
       url: env.URL + this._getUrl(),
+      hash: this._hash,
       attemptedAt: this._attemptedAt?.toISOString() ?? null,
       succeededAt: this._succeededAt?.toISOString() ?? null,
       modifiedAt: this._modifiedAt?.toISOString() ?? null,
