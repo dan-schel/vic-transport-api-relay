@@ -1,6 +1,6 @@
 import { env } from "../env";
 import { PollingDataService } from "../service";
-import { sha256Hash } from "../utils";
+import { prepareDataFolder, sha256Hash } from "../utils";
 import { fetchRealtime } from "./fetch";
 import fsp from "fs/promises";
 
@@ -15,6 +15,7 @@ export class GtfsRealtimeDataService extends PollingDataService {
     const json = await fetchRealtime(env.GTFS_REALTIME_KEY);
 
     const jsonStr = JSON.stringify(json, null, 2);
+    await prepareDataFolder();
     await fsp.writeFile(dataFile, jsonStr);
 
     return sha256Hash(jsonStr);

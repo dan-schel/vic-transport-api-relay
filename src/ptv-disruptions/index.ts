@@ -1,6 +1,6 @@
 import { env } from "../env";
 import { PollingDataService } from "../service";
-import { sha256Hash } from "../utils";
+import { prepareDataFolder, sha256Hash } from "../utils";
 import { callPtvApi } from "./call-ptv-api";
 import fsp from "fs/promises";
 
@@ -22,6 +22,7 @@ export class PtvDisruptionsDataService extends PollingDataService {
     );
 
     const jsonStr = JSON.stringify(json, null, 2);
+    await prepareDataFolder();
     await fsp.writeFile(dataFile, jsonStr);
 
     return sha256Hash(jsonStr);

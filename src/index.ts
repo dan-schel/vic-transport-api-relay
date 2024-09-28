@@ -9,7 +9,7 @@ async function main() {
   // Declare which data services to use.
   const dataServices = {
     gtfs: new GtfsDataService(),
-    gtfsRealtime: new GtfsRealtimeDataService(),
+    // gtfsRealtime: new GtfsRealtimeDataService(),
     ptvDisruptions: new PtvDisruptionsDataService(),
   };
 
@@ -25,11 +25,13 @@ async function main() {
   // Allow anyone to access the public folder (so robots.txt works).
   app.use(express.static("./public"));
 
-  // Requests to the root path will return the status of all data services.
-  app.get("/", (req: express.Request, res: express.Response) => {
+  // Requests to "/status.json" will return the status of all data services.
+  // This is used by index.html, and could also be useful for TrainQuery to
+  // check for data updates.
+  app.get("/status.json", (req: express.Request, res: express.Response) => {
     res.json({
       status: "ok",
-
+      requiresVtarKey: env.VTAR_KEY != null,
       ...Object.entries(dataServices)
         .map(([key, value]) => ({ [key]: value.getStatus() }))
         .reduce((acc, val) => ({ ...acc, ...val }), {}),
