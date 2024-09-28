@@ -2,11 +2,15 @@ import express from "express";
 import { env } from "./env";
 import { authMiddleware } from "./auth";
 import { GtfsDataService } from "./gtfs";
+import { GtfsRealtimeDataService } from "./gtfs-r";
+import { PtvDisruptionsDataService } from "./ptv-disruptions";
 
 async function main() {
   // Declare which data services to use.
   const dataServices = {
     gtfs: new GtfsDataService(),
+    gtfsRealtime: new GtfsRealtimeDataService(),
+    ptvDisruptions: new PtvDisruptionsDataService(),
   };
 
   // Initialize all data services.
