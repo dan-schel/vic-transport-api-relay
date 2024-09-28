@@ -30,7 +30,6 @@ async function main() {
   // check for data updates.
   app.get("/status.json", (req: express.Request, res: express.Response) => {
     res.json({
-      status: "ok",
       requiresVtarKey: env.VTAR_KEY != null,
       ...Object.entries(dataServices)
         .map(([key, value]) => ({ [key]: value.getStatus() }))
