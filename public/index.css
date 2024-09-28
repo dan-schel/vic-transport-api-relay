@@ -87,7 +87,7 @@ h2 {
   box-shadow: inset 0 0 0 2px hsl(120, 80%, 35%);
   background-color: white;
 }
-.service-status.outdated::before {
+.service-status.stale::before {
   background-color: hsl(30, 90%, 50%);
 }
 .service-status.dead::before {

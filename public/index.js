@@ -42,18 +42,24 @@ async function render(data) {
 
   let html = "";
 
+  html += `<div class="fields"><p>Server startup:</p><p>${formatDate(
+    new Date(data.startTime)
+  )}</p></div>`;
+
   if (!data.requiresVtarKey) {
     html += `<p class="alert">VTAR is running in public mode. Consider setting <b>VTAR_KEY</b>!</p>`;
   }
   keyEntry.style.display = data.requiresVtarKey ? "flex" : "none";
 
-  for (const serviceName of Object.keys(data)) {
-    if (serviceName === "status" || serviceName === "requiresVtarKey") {
+  for (const key of Object.keys(data)) {
+    if (key === "requiresVtarKey" || key === "startTime") {
       continue;
     }
 
-    const service = data[serviceName];
-    html += formatServiceStatus(serviceName, service);
+    const service = data[key];
+    if (typeof service === "object") {
+      html += formatServiceStatus(key, service);
+    }
   }
 
   report.innerHTML = html;

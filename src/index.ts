@@ -7,6 +7,8 @@ import { PtvDisruptionsDataService } from "./ptv-disruptions";
 import { DataService } from "./service";
 
 async function main() {
+  const startTime = new Date();
+
   // Declare which data services to use.
   const dataServices: Record<string, DataService> = {};
   if (env.GTFS_ENABLED) {
@@ -37,6 +39,7 @@ async function main() {
   app.get("/status.json", (req: express.Request, res: express.Response) => {
     res.json({
       requiresVtarKey: env.VTAR_KEY != null,
+      startTime: startTime.toISOString(),
       ...Object.entries(dataServices)
         .map(([key, value]) => ({ [key]: value.getStatus() }))
         .reduce((acc, val) => ({ ...acc, ...val }), {}),
