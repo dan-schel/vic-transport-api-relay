@@ -15,6 +15,9 @@ Periodically downloads [GTFS data from Victoria's Department of Transport and Pl
 ```dotenv
 # All values provided below are examples. Customize the values for your needs.
 
+# The URL of the server (default: http://localhost:3000).
+URL = "https://vtar.trainquery.com"
+
 # The port to run the server on (default: 3000).
 PORT = 3000
 
@@ -27,6 +30,23 @@ VTAR_KEY = "..."
 
 # How often, in hours, to re-download gtfs.zip (default: every 6 hours).
 GTFS_REFRESH_HOURS = 6
+
+# How often, in seconds, to re-fetch GTFS realtime data (default: every 20
+# seconds).
+GTFS_REALTIME_REFRESH_SECONDS = 20
+
+# How often, in minutes, to re-fetch disruptions from the PTV API (default:
+# every 5 minutes).
+PTV_DISRUPTIONS_REFRESH_MINUTES = 5
+
+# The developer ID used to authenticate to the PTV API (required).
+PTV_DEV_ID = "..."
+
+# The developer key used to authenticate to the PTV API (required).
+PTV_DEV_KEY = "..."
+
+# The API key for the GTFS realtime API (required).
+GTFS_REALTIME_KEY = "..."
 ```
 
 4. Run `npm start` to start the server.
