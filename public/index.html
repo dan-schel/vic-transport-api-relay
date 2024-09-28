@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vic Transport API Relay Status</title>
+  </head>
+  <body>
+    <h1>Vic Transport API Relay Status</h1>
+    <div class="loading">
+      <p>Loading...</p>
+    </div>
+    <div class="status"></div>
+    <footer>
+      GitHub:
+      <a href="https://github.com/dan-schel/vic-transport-api-relay"
+        >dan-schel/vic-transport-api-relay</a
+      >
+    </footer>
+  </body>
+  <script>
+    const loading = document.querySelector(".loading");
+    const status = document.querySelector(".status");
+    setInterval(refresh, 5000);
+    refresh();
+
+    async function refresh() {
+      loading.innerHTML = `<p>Loading...</p>`;
+      try {
+        const response = await fetch("/status.json");
+        const data = await response.json();
+
+        let html = "";
+
+        if (data.status !== "ok") {
+          html = `<p>Status: ${data.status}</p>`;
+        } else {
+          if (!data.requiresVtarKey) {
+            html += `<p class="alert">VTAR is running in public mode. Consider setting <b>VTAR_KEY</b>!</p>`;
+          }
+
+          for (const serviceName of Object.keys(data)) {
+            if (serviceName === "status" || serviceName === "requiresVtarKey") {
+              continue;
+            }
+
+            const service = data[serviceName];
+            html += formatServiceStatus(serviceName, service);
+          }
+        }
+
+        status.innerHTML = html;
+
+        loading.innerHTML = `<p>Updated ${formatDate(new Date(), false)}</p>`;
+      } catch (error) {
+        loading.innerHTML = `<p>Error: ${error.message}</p>`;
+      }
+    }
+
+    function formatDate(date, showRelative = true) {
+      const dateStr = new Intl.DateTimeFormat("en-AU", {
+        dateStyle: "medium",
+      }).format(date);
+      const timeStr = new Intl.DateTimeFormat("en-AU", {
+        timeStyle: "medium",
+      }).format(date);
+      const weekdayStr = new Intl.DateTimeFormat("en-AU", {
+        weekday: "short",
+      }).format(date);
+
+      if (!showRelative) {
+        return `${weekdayStr} ${dateStr} at ${timeStr}`;
+      }
+
+      const relative = getRelativeDate(date);
+      const relativeStr = new Intl.RelativeTimeFormat("en").format(
+        Math.trunc(relative.value),
+        relative.unit
+      );
+
+      return `${relativeStr}<br>(${weekdayStr} ${dateStr} at ${timeStr})`;
+    }
+
+    function getRelativeDate(date) {
+      const seconds = (date - Date.now()) / 1000;
+
+      if (Math.abs(seconds) < 60) {
+        return { value: seconds, unit: "second" };
+      } else if (Math.abs(seconds) < 60 * 60) {
+        return { value: seconds / 60, unit: "minute" };
+      } else if (Math.abs(seconds) < 60 * 60 * 24) {
+        return { value: seconds / 60 / 60, unit: "hour" };
+      } else {
+        return { value: seconds / 60 / 60 / 24, unit: "day" };
+      }
+    }
+
+    function formatServiceStatus(serviceName, service) {
+      let html = `<h2>${serviceName}</h2><div class="fields">`;
+
+      for (const field of Object.keys(service)) {
+        const value = service[field];
+
+        html += `<p>${field}:</p>`;
+
+        if (value == null) {
+          html += `<p><i>&lt;null&gt;</i></p>`;
+        } else if (
+          value.startsWith("https://") ||
+          value.startsWith("http://")
+        ) {
+          html += `<a href="${value}">${value}</a>`;
+        } else if (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/.test(value)) {
+          html += `<p>${formatDate(new Date(value))}</p>`;
+        } else {
+          html += `<p>${value}</p>`;
+        }
+      }
+
+      html += `</div>`;
+
+      return html;
+    }
+  </script>
+  <style>
+    * {
+      margin: 0;
+      font-family: Optima, Candara, "Noto Sans", source-sans-pro, sans-serif;
+      font-weight: normal;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+    b {
+      font-weight: bold;
+    }
+    body {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+    h1,
+    h2 {
+      font-weight: bold;
+    }
+    .loading {
+      margin-top: 1rem;
+    }
+    .alert {
+      margin-top: 1rem;
+      color: white;
+      padding: 1rem;
+      background-color: rgb(187, 26, 26);
+      border-radius: 0.25rem;
+    }
+    .status {
+      display: flex;
+      flex-direction: column;
+    }
+    h2 {
+      margin-top: 3rem;
+    }
+    .fields {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .fields p {
+      text-wrap: wrap;
+      word-break: break-all;
+    }
+    .fields p:nth-child(2n - 1) {
+      font-weight: bold;
+    }
+    a {
+      color: blue;
+      text-decoration: underline;
+    }
+    footer {
+      margin-top: 3rem;
+      border-top: 1px solid grey;
+      padding-top: 1rem;
+    }
+  </style>
+</html>

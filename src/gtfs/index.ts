@@ -1,55 +1,34 @@
 import { env } from "../env";
-import { DataService } from "../service";
-import { downloadGtfs } from "./utils";
+import { PollingDataService } from "../service";
+import { exec as execCallback } from "child_process";
+import { promisify } from "util";
 
-export class GtfsDataService extends DataService {
-  private _attemptedAt: Date | null = null;
-  private _succeededAt: Date | null = null;
-  private _modifiedAt: Date | null = null;
-  private _hash: string | null = null;
+export const exec = promisify(execCallback);
 
-  async init(): Promise<void> {
-    console.log(`Downloading initial gtfs.zip...`);
-
-    this._attemptedAt = new Date();
-    this._hash = await downloadGtfs();
-    this._succeededAt = new Date();
-
-    // This is our first data. We don't know.
-    this._modifiedAt = null;
+export class GtfsDataService extends PollingDataService {
+  constructor() {
+    super("GTFS", env.GTFS_REFRESH_HOURS * 60 * 60 * 1000);
   }
 
-  onListening(): void {
-    // Periodically refresh gtfs.zip.
-    setInterval(
-      () => this._refreshData(),
-      env.GTFS_REFRESH_HOURS * 60 * 60 * 1000
-    );
-  }
+  protected override async _downloadData() {
+    const result = await exec("scripts/download-gtfs.sh");
+    console.log("---");
+    console.log(result.stdout.trim());
+    console.log("---");
 
-  getStatus(): object {
-    return {
-      hash: this._hash,
-      attemptedAt: this._attemptedAt?.toISOString() ?? null,
-      succeededAt: this._succeededAt?.toISOString() ?? null,
-      modifiedAt: this._modifiedAt?.toISOString() ?? null,
-    };
-  }
+    const line = result.stdout
+      .split("\n")
+      .find((line) => line.startsWith("The hash is:"));
 
-  private async _refreshData() {
-    try {
-      console.log(`Refreshing gtfs.zip...`);
-
-      this._attemptedAt = new Date();
-      const newHash = await downloadGtfs();
-      this._succeededAt = new Date();
-      if (newHash !== this._hash) {
-        this._modifiedAt = new Date();
-      }
-      this._hash = newHash;
-    } catch (err) {
-      console.warn("Failed to refresh gtfs.zip. Retaining old data.");
-      console.warn(err);
+    if (line == null) {
+      throw new Error("Hash not given in download-gtfs.sh output.");
     }
+
+    const hash = line.replace("The hash is: ", "").trim();
+    return hash;
+  }
+
+  protected override _getUrl(): string {
+    return "/gtfs.zip";
   }
 }
