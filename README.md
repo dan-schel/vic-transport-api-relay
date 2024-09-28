@@ -47,6 +47,17 @@ PTV_DEV_KEY = "..."
 
 # The API key for the GTFS realtime API (required).
 GTFS_REALTIME_KEY = "..."
+
+# Can be set to false to disable GTFS polling (default: true).
+GTFS_ENABLED = true
+
+# Can be set to false to disable GTFS realtime polling (default: true).
+# GTFS_REALTIME_KEY must still be provided regardless of this value.
+GTFS_REALTIME_ENABLED = true
+
+# Can be set to false to disable PTV Disruptions polling (default: true).
+# PTV_DEV_ID and PTV_DEV_KEY must still be provided regardless of this value.
+PTV_DISRUPTIONS_ENABLED = true
 ```
 
 4. Run `npm start` to start the server.

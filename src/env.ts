@@ -3,6 +3,10 @@ import { z } from "zod";
 
 configDotenv();
 
+const stringBooleanSchema = z
+  .enum(["true", "false"])
+  .transform((x) => x === "true");
+
 const envSchema = z.object({
   URL: z.string().default("http://localhost:3000"),
   PORT: z.string().default("3000"),
@@ -16,6 +20,10 @@ const envSchema = z.object({
   PTV_DEV_ID: z.string(),
   PTV_DEV_KEY: z.string(),
   GTFS_REALTIME_KEY: z.string(),
+
+  GTFS_ENABLED: stringBooleanSchema.default("true"),
+  GTFS_REALTIME_ENABLED: stringBooleanSchema.default("true"),
+  PTV_DISRUPTIONS_ENABLED: stringBooleanSchema.default("true"),
 });
 
 export const env = envSchema.parse(process.env);

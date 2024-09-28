@@ -2,16 +2,22 @@ import express from "express";
 import { env } from "./env";
 import { authMiddleware } from "./auth";
 import { GtfsDataService } from "./gtfs";
-// import { GtfsRealtimeDataService } from "./gtfs-r";
-// import { PtvDisruptionsDataService } from "./ptv-disruptions";
+import { GtfsRealtimeDataService } from "./gtfs-r";
+import { PtvDisruptionsDataService } from "./ptv-disruptions";
+import { DataService } from "./service";
 
 async function main() {
   // Declare which data services to use.
-  const dataServices = {
-    gtfs: new GtfsDataService(),
-    // gtfsRealtime: new GtfsRealtimeDataService(),
-    // ptvDisruptions: new PtvDisruptionsDataService(),
-  };
+  const dataServices: Record<string, DataService> = {};
+  if (env.GTFS_ENABLED) {
+    dataServices["gtfs"] = new GtfsDataService();
+  }
+  if (env.GTFS_REALTIME_ENABLED) {
+    dataServices["gtfsRealtime"] = new GtfsRealtimeDataService();
+  }
+  if (env.PTV_DISRUPTIONS_ENABLED) {
+    dataServices["ptvDisruptions"] = new PtvDisruptionsDataService();
+  }
 
   // Initialize all data services.
   await Promise.all(
