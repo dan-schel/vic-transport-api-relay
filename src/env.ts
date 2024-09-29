@@ -1,7 +1,20 @@
+import { parseFloatNull } from "@dan-schel/js-utils";
 import { configDotenv } from "dotenv";
 import { z } from "zod";
 
 configDotenv();
+
+const stringNumberSchema = z.string().transform((x, ctx) => {
+  const result = parseFloatNull(x);
+  if (result == null) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Not a number.",
+    });
+    return z.NEVER;
+  }
+  return result;
+});
 
 const stringBooleanSchema = z
   .enum(["true", "false"])
@@ -13,9 +26,9 @@ const envSchema = z.object({
   NODE_ENV: z.string().default("development"),
   RELAY_KEY: z.string().nullable().default(null),
 
-  GTFS_REFRESH_HOURS: z.number().default(6),
-  GTFS_REALTIME_REFRESH_SECONDS: z.number().default(20),
-  PTV_DISRUPTIONS_REFRESH_MINUTES: z.number().default(5),
+  GTFS_REFRESH_HOURS: stringNumberSchema.default("6"),
+  GTFS_REALTIME_REFRESH_SECONDS: stringNumberSchema.default("20"),
+  PTV_DISRUPTIONS_REFRESH_MINUTES: stringNumberSchema.default("5"),
 
   PTV_DEV_ID: z.string(),
   PTV_DEV_KEY: z.string(),
