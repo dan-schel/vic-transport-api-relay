@@ -126,11 +126,11 @@ function formatServiceStatus(serviceName, service) {
     if (value == null) {
       html += `<p><i>&lt;null&gt;</i></p>`;
     } else if (field === "url") {
-      if (vtarKey) {
-        html += `<button onClick="downloadFile('${value}')">Download</button>`;
-      } else {
-        html += `<a href="${value}">${value}</a>`;
-      }
+      html += `<div class="url"><a href="${value}">${value}</a>${
+        vtarKey
+          ? `<button onClick="downloadFile('${value}')">Download</button>`
+          : ""
+      }</div>`;
     } else if (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/.test(value)) {
       html += `<p>${formatDate(new Date(value))}</p>`;
     } else {

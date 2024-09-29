@@ -101,13 +101,21 @@ h2 {
   margin-top: 1rem;
 }
 
-.fields p {
+.fields p,
+.fields a {
   text-wrap: wrap;
   word-break: break-all;
 }
 
 .fields p:nth-child(2n - 1) {
   font-weight: bold;
+}
+
+.url {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
 }
 
 a {
@@ -122,6 +130,5 @@ footer {
 }
 
 button {
-  justify-self: start;
   padding: 0.25rem 1rem;
 }
