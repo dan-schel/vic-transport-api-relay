@@ -2,7 +2,9 @@
 
 Interfaces with Victorian transport APIs for [TrainQuery](https://github.com/dan-schel/trainquery).
 
-Periodically downloads [GTFS data from Victoria's Department of Transport and Planning](https://discover.data.vic.gov.au/dataset/timetable-and-geographic-information-gtfs), strips out the files that aren't needed by TrainQuery (e.g. bus timetables, geographic data), and makes the optimized zip file available for download at `/gtfs.zip`.
+The server periodically downloads [GTFS data from Victoria's Department of Transport and Planning](https://discover.data.vic.gov.au/dataset/timetable-and-geographic-information-gtfs), strips out the files that aren't needed by TrainQuery (e.g. bus timetables, geographic data), and makes the optimized zip file available for download at `/gtfs.zip`.
+
+It also makes [GTFS realtime data](https://discover.data.vic.gov.au/dataset/gtfsr-metro-trains-vehicle-positions) available at `/gtfs-realtime.json` and disruptions from the [PTV API](https://www.ptv.vic.gov.au/footer/data-and-reporting/datasets/ptv-timetable-api/) available at `/ptv-disruptions.json`.
 
 **Note:** Assumes a Linux/MacOS running environment (i.e. the system must be able to execute a bash script, with tools such as `awk`, `curl`, `sha256sum`, `zip`, etc. available).
 
