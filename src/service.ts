@@ -4,7 +4,7 @@ import { env } from "./env";
 // reflected in the status.
 const flakyWindow = 5;
 
-const outdatedAfterLifecycles = 1.1;
+const staleAfterLifecycles = 1.1;
 const deadAfterLifecycles = 3.1;
 
 export abstract class DataService {
@@ -64,8 +64,8 @@ export abstract class PollingDataService extends DataService {
 
     if (lifecycles > deadAfterLifecycles) {
       return "dead";
-    } else if (lifecycles > outdatedAfterLifecycles) {
-      return "outdated";
+    } else if (lifecycles > staleAfterLifecycles) {
+      return "stale";
     } else if (this._flakyCountdown > 0) {
       return "flaky";
     } else {

@@ -24,9 +24,9 @@ PORT = 3000
 # Flag for Node to know when it's running in production (default: development).
 NODE_ENV = "production"
 
-# If provided, clients must pass a "vtar-key" header with this value to download
-# the available data (optional).
-VTAR_KEY = "..."
+# If provided, clients must pass a "relay-key" header with this value to
+# download the available data (optional).
+RELAY_KEY = "..."
 
 # How often, in hours, to re-download gtfs.zip (default: every 6 hours).
 GTFS_REFRESH_HOURS = 6
@@ -47,6 +47,17 @@ PTV_DEV_KEY = "..."
 
 # The API key for the GTFS realtime API (required).
 GTFS_REALTIME_KEY = "..."
+
+# Can be set to false to disable GTFS polling (default: true).
+GTFS_ENABLED = true
+
+# Can be set to false to disable GTFS realtime polling (default: true).
+# GTFS_REALTIME_KEY must still be provided regardless of this value.
+GTFS_REALTIME_ENABLED = true
+
+# Can be set to false to disable PTV Disruptions polling (default: true).
+# PTV_DEV_ID and PTV_DEV_KEY must still be provided regardless of this value.
+PTV_DISRUPTIONS_ENABLED = true
 ```
 
 4. Run `npm start` to start the server.
