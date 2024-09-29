@@ -3,16 +3,16 @@ const acronyms = ["URL", "API", "PTV", "GTFS"];
 const loading = document.querySelector(".loading");
 const report = document.querySelector(".report");
 const keyEntry = document.querySelector(".key-entry");
-const vtarKeyInput = document.querySelector("#vtar-key");
+const relayKeyInput = document.querySelector("#relay-key");
 
-let vtarKey = "";
-let oldVtarKey = "";
+let relayKey = "";
+let oldRelayKey = "";
 let data = null;
 
-vtarKeyInput.addEventListener("input", (event) => {
-  vtarKey = event.target.value;
-  const changed = (oldVtarKey.length == 0) !== (vtarKey.length == 0);
-  oldVtarKey = vtarKey;
+relayKeyInput.addEventListener("input", (event) => {
+  relayKey = event.target.value;
+  const changed = (oldRelayKey.length == 0) !== (relayKey.length == 0);
+  oldRelayKey = relayKey;
   if (changed) {
     render(data);
   }
@@ -46,13 +46,13 @@ async function render(data) {
     new Date(data.startTime)
   )}</p></div>`;
 
-  if (!data.requiresVtarKey) {
-    html += `<p class="alert">VTAR is running in public mode. Consider setting <b>VTAR_KEY</b>!</p>`;
+  if (!data.requiresRelayKey) {
+    html += `<p class="alert">VTAR is running in public mode. Consider setting <b>RELAY_KEY</b>!</p>`;
   }
-  keyEntry.style.display = data.requiresVtarKey ? "flex" : "none";
+  keyEntry.style.display = data.requiresRelayKey ? "flex" : "none";
 
   for (const key of Object.keys(data)) {
-    if (key === "requiresVtarKey" || key === "startTime") {
+    if (key === "requiresRelayKey" || key === "startTime") {
       continue;
     }
 
@@ -127,7 +127,7 @@ function formatServiceStatus(serviceName, service) {
       html += `<p><i>&lt;null&gt;</i></p>`;
     } else if (field === "url") {
       html += `<div class="url"><a href="${value}">${value}</a>${
-        vtarKey
+        relayKey
           ? `<button onClick="downloadFile('${value}')">Download</button>`
           : ""
       }</div>`;
@@ -144,10 +144,10 @@ function formatServiceStatus(serviceName, service) {
 }
 
 async function downloadFile(url) {
-  const response = await fetch(url, { headers: { "vtar-key": vtarKey } });
+  const response = await fetch(url, { headers: { "relay-key": relayKey } });
 
   if (response.status === 401) {
-    alert("Invalid VTAR key!");
+    alert("Invalid relay key!");
     return;
   } else if (!response.ok) {
     alert("Failed to download file!");

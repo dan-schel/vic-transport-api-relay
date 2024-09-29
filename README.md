@@ -24,9 +24,9 @@ PORT = 3000
 # Flag for Node to know when it's running in production (default: development).
 NODE_ENV = "production"
 
-# If provided, clients must pass a "vtar-key" header with this value to download
-# the available data (optional).
-VTAR_KEY = "..."
+# If provided, clients must pass a "relay-key" header with this value to
+# download the available data (optional).
+RELAY_KEY = "..."
 
 # How often, in hours, to re-download gtfs.zip (default: every 6 hours).
 GTFS_REFRESH_HOURS = 6
