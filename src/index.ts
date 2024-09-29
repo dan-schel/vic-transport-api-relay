@@ -2,7 +2,7 @@ import express from "express";
 import { env } from "./env";
 import { authMiddleware } from "./auth";
 import { GtfsDataService } from "./gtfs";
-import { GtfsRealtimeDataService } from "./gtfs-r";
+import { GtfsRealtimeDataService } from "./gtfs-realtime";
 import { PtvDisruptionsDataService } from "./ptv-disruptions";
 import { DataService } from "./service";
 
