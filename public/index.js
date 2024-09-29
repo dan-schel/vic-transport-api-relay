@@ -3,6 +3,7 @@ const acronyms = ["URL", "API", "PTV", "GTFS"];
 const loading = document.querySelector(".loading");
 const report = document.querySelector(".report");
 const keyEntry = document.querySelector(".key-entry");
+const keyAlert = document.querySelector(".key-alert");
 const relayKeyInput = document.querySelector("#relay-key");
 
 let relayKey = "";
@@ -46,9 +47,7 @@ async function render(data) {
     new Date(data.startTime)
   )}</p></div>`;
 
-  if (!data.requiresRelayKey) {
-    html += `<p class="alert">VTAR is running in public mode. Consider setting <b>RELAY_KEY</b>!</p>`;
-  }
+  keyAlert.style.display = !data.requiresRelayKey ? "block" : "none";
   keyEntry.style.display = data.requiresRelayKey ? "flex" : "none";
 
   for (const key of Object.keys(data)) {
