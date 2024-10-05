@@ -4,7 +4,7 @@ Interfaces with Victorian transport APIs for [TrainQuery](https://github.com/dan
 
 The server periodically downloads [GTFS data from Victoria's Department of Transport and Planning](https://discover.data.vic.gov.au/dataset/timetable-and-geographic-information-gtfs), strips out the files that aren't needed by TrainQuery (e.g. bus timetables, geographic data), and makes the optimized zip file available for download at `/gtfs.zip`.
 
-It also makes [GTFS realtime data](https://discover.data.vic.gov.au/dataset/gtfsr-metro-trains-vehicle-positions) available at `/gtfs-realtime.json` and disruptions from the [PTV API](https://www.ptv.vic.gov.au/footer/data-and-reporting/datasets/ptv-timetable-api/) available at `/ptv-disruptions.json`.
+It also makes [GTFS realtime data](https://discover.data.vic.gov.au/dataset/gtfsr-metro-trains-vehicle-positions) available at `/gtfs-realtime.json`, disruptions from the [PTV API](https://www.ptv.vic.gov.au/footer/data-and-reporting/datasets/ptv-timetable-api/) available at `/ptv-disruptions.json`, and platform information from a combination of sources available at `/ptv-platforms.json`.
 
 **Note:** Assumes a Linux/MacOS running environment (i.e. the system must be able to execute a bash script, with tools such as `awk`, `curl`, `sha256sum`, `zip`, etc. available).
 
@@ -41,6 +41,10 @@ GTFS_REALTIME_REFRESH_SECONDS = 20
 # every 5 minutes).
 PTV_DISRUPTIONS_REFRESH_MINUTES = 5
 
+# How often, in minutes, to re-fetch platform data from the PTV API and V/Line
+# website (default: every 30 minutes).
+PTV_PLATFORMS_REFRESH_MINUTES = 30
+
 # The developer ID used to authenticate to the PTV API (required).
 PTV_DEV_ID = "..."
 
@@ -60,6 +64,10 @@ GTFS_REALTIME_ENABLED = true
 # Can be set to false to disable PTV Disruptions polling (default: true).
 # PTV_DEV_ID and PTV_DEV_KEY must still be provided regardless of this value.
 PTV_DISRUPTIONS_ENABLED = true
+
+# Can be set to false to disable PTV Platforms polling (default: true).
+# PTV_DEV_ID and PTV_DEV_KEY must still be provided regardless of this value.
+PTV_PLATFORMS_ENABLED = true
 ```
 
 4. Run `npm start` to start the server.

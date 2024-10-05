@@ -1,7 +1,7 @@
 import { env } from "../env";
 import { PollingDataService } from "../service";
 import { prepareDataFolder, sha256Hash } from "../utils";
-import { callPtvApi } from "./call-ptv-api";
+import { callPtvApi } from "../utils-ptv-api";
 import fsp from "fs/promises";
 
 const dataFile = "data/ptv-disruptions.json";
