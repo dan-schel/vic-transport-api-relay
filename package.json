@@ -12,9 +12,14 @@
     "@types/express": "^4.17.21",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "luxon": "^3.5.0",
+    "node-html-parser": "^6.1.13",
     "protobufjs": "^7.4.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3",
     "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/luxon": "^3.4.2"
   }
 }

@@ -2,11 +2,13 @@ import { env } from "../env";
 import { PollingDataService } from "../service";
 import { prepareDataFolder, sha256Hash } from "../utils";
 import fsp from "fs/promises";
-import { getPlatformsFromPtvApi } from "./get-platforms-from-ptv-api";
+import { fetchFromPtvApi } from "./platforms-ptv-api";
+import { fetchFromVline } from "./platforms-vline";
 
 const dataFile = "data/ptv-platforms.json";
 
 const fssPtvCode = 1071;
+const scsPtvCode = 1181;
 
 export class PtvPlatformsDataService extends PollingDataService {
   constructor() {
@@ -14,7 +16,30 @@ export class PtvPlatformsDataService extends PollingDataService {
   }
 
   protected override async _downloadData(): Promise<string> {
-    const json = await getPlatformsFromPtvApi(fssPtvCode);
+    // TODO: Add more stations (maybe spread the requests out over the refresh
+    // cycle).
+    const requests = await Promise.allSettled([
+      fetchFromPtvApi(fssPtvCode),
+      fetchFromVline(),
+      fetchFromPtvApi(scsPtvCode),
+    ]);
+
+    const [fssPtv, scsVline, scsPtv] = requests;
+
+    const json = {
+      [fssPtvCode]: fssPtv.status === "fulfilled" ? fssPtv.value : [],
+      [scsPtvCode]: [
+        ...(scsVline.status === "fulfilled" ? scsVline.value : []),
+        ...(scsPtv.status === "fulfilled" ? scsPtv.value : []),
+      ],
+    };
+
+    // TODO: Better error handling. Ideally it should update the status
+    // indicator if there's any failures (and maybe report on the broken
+    // station names in the full status object).
+    if (requests.some((r) => r.status === "rejected")) {
+      console.warn("Some platform fetching was unsuccessful.");
+    }
 
     const jsonStr = JSON.stringify(json, null, 2);
     await prepareDataFolder();
