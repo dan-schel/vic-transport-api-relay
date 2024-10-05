@@ -5,6 +5,7 @@ import { GtfsDataService } from "./gtfs";
 import { GtfsRealtimeDataService } from "./gtfs-realtime";
 import { PtvDisruptionsDataService } from "./ptv-disruptions";
 import { DataService } from "./service";
+import { PtvPlatformsDataService } from "./ptv-platforms";
 
 async function main() {
   const startTime = new Date();
@@ -19,6 +20,9 @@ async function main() {
   }
   if (env.PTV_DISRUPTIONS_ENABLED) {
     dataServices["ptvDisruptions"] = new PtvDisruptionsDataService();
+  }
+  if (env.PTV_PLATFORMS_ENABLED) {
+    dataServices["ptvPlatforms"] = new PtvPlatformsDataService();
   }
 
   // Initialize all data services.

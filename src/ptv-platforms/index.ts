@@ -1,25 +1,20 @@
 import { env } from "../env";
 import { PollingDataService } from "../service";
 import { prepareDataFolder, sha256Hash } from "../utils";
-import { callPtvApi } from "../utils-ptv-api";
 import fsp from "fs/promises";
+import { getPlatformsFromPtvApi } from "./get-platforms-from-ptv-api";
 
-const dataFile = "data/ptv-disruptions.json";
+const dataFile = "data/ptv-platforms.json";
 
-export class PtvDisruptionsDataService extends PollingDataService {
+const fssPtvCode = 1071;
+
+export class PtvPlatformsDataService extends PollingDataService {
   constructor() {
-    super("PTV Disruptions", env.PTV_DISRUPTIONS_REFRESH_MINUTES * 60 * 1000);
+    super("PTV Platforms", env.PTV_PLATFORMS_REFRESH_MINUTES * 60 * 1000);
   }
 
   protected override async _downloadData(): Promise<string> {
-    const json = await callPtvApi(
-      "/v3/disruptions",
-      {
-        route_types: ["0", "3"],
-      },
-      env.PTV_DEV_ID,
-      env.PTV_DEV_KEY
-    );
+    const json = await getPlatformsFromPtvApi(fssPtvCode);
 
     const jsonStr = JSON.stringify(json, null, 2);
     await prepareDataFolder();
