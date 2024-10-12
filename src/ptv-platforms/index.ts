@@ -87,7 +87,7 @@ export class PtvPlatformsDataService extends DataService {
     // The only stop which we fetch platforms for on startup is Flinders Street.
     // It means VTAR will always have platform information for Flinders Street,
     // and also acts as a test call which will block startup if it fails.
-    await this.fetchNext();
+    await this.fetchNext({ scheduleNext: false });
   }
 
   override onListening(): void {
@@ -109,8 +109,10 @@ export class PtvPlatformsDataService extends DataService {
     };
   }
 
-  async fetchNext() {
-    this._scheduleNextFetch();
+  async fetchNext({ scheduleNext = true } = {}): Promise<void> {
+    if (scheduleNext) {
+      this._scheduleNextFetch();
+    }
 
     const stopID = ptvStopCodes[this._stopIndex];
     this._stopIndex = (this._stopIndex + 1) % ptvStopCodes.length;
