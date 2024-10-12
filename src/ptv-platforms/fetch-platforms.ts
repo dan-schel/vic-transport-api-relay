@@ -13,7 +13,7 @@ const schema = z.object({
   departures: z
     .object({
       run_ref: z.string(),
-      platform_number: dirtyString.transform((x) => x.toLowerCase()),
+      platform_number: dirtyString.transform((x) => x.toLowerCase()).nullable(),
       scheduled_departure_utc: z.coerce.date(),
     })
     .array(),
@@ -42,7 +42,7 @@ export async function fetchFromPtvApi(
   const result = rawData.departures
     .map((x) => {
       const run = rawData.runs[x.run_ref];
-      if (!run) {
+      if (!run || x.platform_number == null) {
         return null;
       }
 
