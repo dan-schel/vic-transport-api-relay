@@ -12,9 +12,9 @@ export class GtfsDataService extends PollingDataService {
 
   protected override async _downloadData() {
     const result = await exec("scripts/download-gtfs.sh");
-    console.log("---");
-    console.log(result.stdout.trim());
-    console.log("---");
+    // console.log("---");
+    // console.log(result.stdout.trim());
+    // console.log("---");
 
     const line = result.stdout
       .split("\n")

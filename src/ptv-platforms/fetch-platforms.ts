@@ -2,7 +2,7 @@ import { z } from "zod";
 import { env } from "../env";
 import { callPtvApi } from "../utils-ptv-api";
 import { nonNull } from "@dan-schel/js-utils";
-import { cleanString, KnownPlatform } from "./utils";
+import { cleanString, KnownPlatform } from "../utils";
 
 const dirtyString = z.string().transform((s) => cleanString(s));
 

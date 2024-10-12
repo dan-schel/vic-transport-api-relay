@@ -1,7 +1,7 @@
 import { itsOk, unique } from "@dan-schel/js-utils";
-import { cleanString, KnownPlatform } from "./utils";
 import { parse } from "node-html-parser";
 import { DateTime } from "luxon";
+import { cleanString, KnownPlatform } from "../utils";
 
 const vlineUrl = "https://www.vline.com.au/scs-departures";
 
@@ -22,14 +22,14 @@ export async function fetchFromVline(): Promise<KnownPlatform[]> {
     .querySelectorAll(firstServicesQuery)
     .map((x) => cleanString(x.innerText));
   if (firstServices.length == 0) {
-    console.warn(`Nothing matches "${firstServices}" query.`);
+    throw new Error(`Nothing matches "${firstServices}" query.`);
   }
 
   const nextServices = html
     .querySelectorAll(nextServicesQuery)
     .map((x) => cleanString(x.innerText));
   if (nextServices.length == 0) {
-    console.warn(`Nothing matches "${nextServicesQuery}" query.`);
+    throw new Error(`Nothing matches "${nextServicesQuery}" query.`);
   }
 
   const rawResult: {
@@ -41,7 +41,7 @@ export async function fetchFromVline(): Promise<KnownPlatform[]> {
   for (const serviceStr of firstServices) {
     const match = firstServicesRegex.exec(serviceStr);
     if (match == null) {
-      console.warn(`Couldn't parse "${serviceStr}" as a first service.`);
+      throw new Error(`Couldn't parse "${serviceStr}" as a first service.`);
       continue;
     }
 
@@ -52,7 +52,7 @@ export async function fetchFromVline(): Promise<KnownPlatform[]> {
   for (const serviceStr of nextServices) {
     const match = nextServicesRegex.exec(serviceStr);
     if (match == null) {
-      console.warn(`Couldn't parse "${serviceStr}" as a next service.`);
+      throw new Error(`Couldn't parse "${serviceStr}" as a next service.`);
       continue;
     }
 
@@ -69,7 +69,7 @@ export async function fetchFromVline(): Promise<KnownPlatform[]> {
     terminus: null,
     terminusName: x.terminusName,
     scheduledDepartureTime: guessFullDateTime(x.timeStr),
-    platform: x.platformStr.toLowerCase(),
+    platform: processPlatformStr(x.platformStr),
   }));
 
   return result;
@@ -92,4 +92,15 @@ function guessFullDateTime(timeStr: string): Date {
   );
 
   return itsOk(bestGuess);
+}
+
+function processPlatformStr(platformStr: string): string {
+  const id = platformStr.toLowerCase();
+
+  // If no A/B is provided, assume A?? (Except platform 1.)
+  if (id != "1" && /^[0-9]+$/g.test(id)) {
+    return `${id}a`;
+  }
+
+  return id;
 }
