@@ -41,9 +41,18 @@ GTFS_REALTIME_REFRESH_SECONDS = 20
 # every 5 minutes).
 PTV_DISRUPTIONS_REFRESH_MINUTES = 5
 
-# How often, in minutes, to re-fetch platform data from the PTV API and V/Line
-# website (default: every 30 minutes).
-PTV_PLATFORMS_REFRESH_MINUTES = 30
+# How often, in seconds, to send a platform request to the PTV API when initial
+# platform data is being populated (default: every 10 seconds).
+PTV_PLATFORMS_INITIAL_FETCH_SECONDS = 10
+
+# How often, in seconds, to send a platform request to the PTV API once an
+# attempt has been made for every stop needing platform data (default: every 120
+# seconds).
+PTV_PLATFORMS_REGULAR_FETCH_SECONDS = 120
+
+# How often, in minutes, to re-fetch platform data from the V/Line website
+# (default: every 10 minutes).
+SCS_PLATFORMS_REFRESH_MINUTES = 10
 
 # The developer ID used to authenticate to the PTV API (required).
 PTV_DEV_ID = "..."
@@ -68,6 +77,9 @@ PTV_DISRUPTIONS_ENABLED = true
 # Can be set to false to disable PTV Platforms polling (default: true).
 # PTV_DEV_ID and PTV_DEV_KEY must still be provided regardless of this value.
 PTV_PLATFORMS_ENABLED = true
+
+# Can be set to false to disable SCS Platforms scraping (default: true).
+SCS_PLATFORMS_ENABLED = true
 ```
 
 4. Run `npm start` to start the server.

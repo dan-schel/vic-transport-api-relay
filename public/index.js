@@ -1,4 +1,4 @@
-const acronyms = ["URL", "API", "PTV", "GTFS"];
+const acronyms = ["URL", "API", "PTV", "GTFS", "SCS"];
 
 const loading = document.querySelector(".loading");
 const report = document.querySelector(".report");

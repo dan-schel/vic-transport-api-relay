@@ -1,54 +1,158 @@
 import { env } from "../env";
-import { PollingDataService } from "../service";
-import { prepareDataFolder, sha256Hash } from "../utils";
+import { DataService, PollingDataService } from "../service";
+import { KnownPlatform, prepareDataFolder, sha256Hash } from "../utils";
 import fsp from "fs/promises";
-import { fetchFromPtvApi } from "./platforms-ptv-api";
-import { fetchFromVline } from "./platforms-vline";
+import { fetchFromPtvApi } from "./fetch-platforms";
 
 const dataFile = "data/ptv-platforms.json";
 
-const fssPtvCode = 1071;
-const scsPtvCode = 1181;
+const ptvStopCodes = [
+  // Central stations - Should always be fetched first.
+  1071, // Flinders Street
+  1181, // Southern Cross
+  1162, // Richmond
+  1144, // North Melbourne
+  1030, // Burnley
 
-export class PtvPlatformsDataService extends PollingDataService {
+  // Stations where platforms are unpredictable.
+  1012, // Auburn
+  1018, // Belgrave
+  1020, // Bentleigh
+  1026, // Box Hill
+  1032, // Camberwell
+  1037, // Chatham
+  1039, // Cheltenham
+  1044, // Craigieburn
+  1045, // Cranbourne
+  1049, // Dandenong
+  1057, // East Camberwell
+  1230, // East Pakenham
+  1062, // Eltham
+  1063, // Epping
+  1064, // Essendon
+  1073, // Frankston
+  1081, // Glen Huntly
+  1078, // Glen Waverley
+  1084, // Greensborough
+  1090, // Hawthorn
+  1113, // Laverton
+  1115, // Lilydale
+  1119, // McKinnon
+  1228, // Mernda
+  1132, // Moorabbin
+  1152, // Ormond
+  1157, // Patterson
+  1163, // Ringwood
+  1224, // South Morang
+  1187, // Sunbury
+  1229, // Union
+  1202, // Watergardens
+  1205, // Werribee
+  1208, // Westall
+
+  // Usually predictable, but not when disrupted.
+  1021, // Berwick
+  1036, // Caulfield
+  1041, // Clifton Hill
+  1051, // Darling
+  1093, // Heidelberg
+  1134, // Mordialloc
+  1141, // Newport
+  1150, // Oakleigh
+  1161, // Reservoir
+  1218, // Sunshine
+];
+
+export class PtvPlatformsDataService extends DataService {
+  private readonly _initialFetchInterval;
+  private readonly _regularFetchInterval;
+  private _stopIndex;
+  private _knownPlatforms: Map<number, KnownPlatform[]>;
+  private _status: Map<number, "pending" | "success" | "failure">;
+  private _succeededAt: Date | null;
+  private _failedAt: Date | null;
+
   constructor() {
-    super("PTV Platforms", env.PTV_PLATFORMS_REFRESH_MINUTES * 60 * 1000);
+    super();
+    this._initialFetchInterval = env.PTV_PLATFORMS_INITIAL_FETCH_SECONDS * 1000;
+    this._regularFetchInterval = env.PTV_PLATFORMS_REGULAR_FETCH_SECONDS * 1000;
+    this._stopIndex = 0;
+    this._knownPlatforms = new Map();
+    this._status = new Map(ptvStopCodes.map((x) => [x, "pending"]));
+    this._succeededAt = null;
+    this._failedAt = null;
   }
 
-  protected override async _downloadData(): Promise<string> {
-    // TODO: Add more stations (maybe spread the requests out over the refresh
-    // cycle).
-    const requests = await Promise.allSettled([
-      fetchFromPtvApi(fssPtvCode),
-      fetchFromVline(),
-      fetchFromPtvApi(scsPtvCode),
-    ]);
+  override async init(): Promise<void> {
+    // The only stop which we fetch platforms for on startup is Flinders Street.
+    // It means VTAR will always have platform information for Flinders Street,
+    // and also acts as a test call which will block startup if it fails.
+    await this.fetchNext();
+  }
 
-    const [fssPtv, scsVline, scsPtv] = requests;
+  override onListening(): void {
+    this._scheduleNextFetch();
+  }
 
-    const json = {
-      [fssPtvCode]: fssPtv.status === "fulfilled" ? fssPtv.value : [],
-      [scsPtvCode]: [
-        ...(scsVline.status === "fulfilled" ? scsVline.value : []),
-        ...(scsPtv.status === "fulfilled" ? scsPtv.value : []),
-      ],
+  override getStatus(): object {
+    const allStatuses = Array.from(this._status.values());
+    const successes = allStatuses.filter((x) => x == "success").length;
+    const pendings = allStatuses.filter((x) => x == "pending").length;
+    const failures = allStatuses.filter((x) => x == "failure").length;
+
+    return {
+      status: this._overallStatus(allStatuses),
+      url: env.URL + dataFile.replace(/^data\//, "/"),
+      platforms: `${successes} successful, ${pendings} pending, ${failures} failed`,
+      succeededAt: this._succeededAt?.toISOString() ?? null,
+      failedAt: this._failedAt?.toISOString() ?? null,
     };
-
-    // TODO: Better error handling. Ideally it should update the status
-    // indicator if there's any failures (and maybe report on the broken
-    // station names in the full status object).
-    if (requests.some((r) => r.status === "rejected")) {
-      console.warn("Some platform fetching was unsuccessful.");
-    }
-
-    const jsonStr = JSON.stringify(json, null, 2);
-    await prepareDataFolder();
-    await fsp.writeFile(dataFile, jsonStr);
-
-    return sha256Hash(jsonStr);
   }
 
-  protected override _getUrl(): string {
-    return dataFile.replace(/^data\//, "/");
+  async fetchNext() {
+    this._scheduleNextFetch();
+
+    const stopID = ptvStopCodes[this._stopIndex];
+    this._stopIndex = (this._stopIndex + 1) % ptvStopCodes.length;
+
+    try {
+      const platforms = await fetchFromPtvApi(stopID);
+      this._knownPlatforms.set(stopID, platforms);
+
+      const json = Object.fromEntries(this._knownPlatforms.entries());
+      const jsonStr = JSON.stringify(json, null, 2);
+      await prepareDataFolder();
+      await fsp.writeFile(dataFile, jsonStr);
+
+      this._status.set(stopID, "success");
+      this._succeededAt = new Date();
+    } catch (err) {
+      this._status.set(stopID, "failure");
+      this._failedAt = new Date();
+      console.warn(
+        `Failed to fetch platform data for stop ${stopID}. Retaining old data if available.`
+      );
+      console.warn(err);
+    }
+  }
+
+  private _scheduleNextFetch() {
+    const pending = Array.from(this._status.values()).includes("pending");
+    const interval = pending
+      ? this._initialFetchInterval
+      : this._regularFetchInterval;
+    setTimeout(() => this.fetchNext(), interval);
+  }
+
+  private _overallStatus(allStatuses: ("success" | "failure" | "pending")[]) {
+    if (allStatuses.every((x) => x != "success")) {
+      return "dead";
+    } else if (allStatuses.some((x) => x == "failure")) {
+      return "flaky";
+    } else if (allStatuses.some((x) => x == "pending")) {
+      return "populating";
+    } else {
+      return "healthy";
+    }
   }
 }

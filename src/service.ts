@@ -75,7 +75,7 @@ export abstract class PollingDataService extends DataService {
 
   private async _refreshData() {
     try {
-      console.log(`Refreshing ${this._dataName}...`);
+      // console.log(`Refreshing ${this._dataName}...`);
 
       this._attemptedAt = new Date();
       const newHash = await this._downloadData();
