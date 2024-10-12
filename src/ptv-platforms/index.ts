@@ -7,12 +7,65 @@ import { fetchFromPtvApi } from "./fetch-platforms";
 const dataFile = "data/ptv-platforms.json";
 
 const ptvStopCodes = [
+  // Central stations - Should always be fetched first.
   1071, // Flinders Street
   1181, // Southern Cross
+  1162, // Richmond
+  1144, // North Melbourne
+  1030, // Burnley
+
+  // Stations where platforms are unpredictable.
+  1012, // Auburn
+  1018, // Belgrave
+  1020, // Bentleigh
+  1026, // Box Hill
+  1032, // Camberwell
+  1037, // Chatham
+  1039, // Cheltenham
+  1044, // Craigieburn
+  1045, // Cranbourne
+  1049, // Dandenong
+  1057, // East Camberwell
+  1230, // East Pakenham
+  1062, // Eltham
+  1063, // Epping
+  1064, // Essendon
+  1073, // Frankston
+  1081, // Glen Huntly
+  1078, // Glen Waverley
+  1084, // Greensborough
+  1090, // Hawthorn
+  1113, // Laverton
+  1115, // Lilydale
+  1119, // McKinnon
+  1228, // Mernda
+  1132, // Moorabbin
+  1152, // Ormond
+  1157, // Patterson
+  1163, // Ringwood
+  1224, // South Morang
+  1187, // Sunbury
+  1229, // Union
+  1202, // Watergardens
+  1205, // Werribee
+  1208, // Westall
+
+  // Usually predictable, but not when disrupted.
+  1021, // Berwick
+  1036, // Caulfield
+  1041, // Clifton Hill
+  1051, // Darling
+  1093, // Heidelberg
+  1134, // Mordialloc
+  1141, // Newport
+  1150, // Oakleigh
+  1161, // Reservoir
+  1218, // Sunshine
 ];
 
 export class PtvPlatformsDataService extends DataService {
-  private readonly _fetchInterval;
+  private readonly _initialFetchInterval;
+  private readonly _regularFetchInterval;
   private _stopIndex;
   private _knownPlatforms: Map<number, KnownPlatform[]>;
   private _status: Map<number, "pending" | "success" | "failure">;
@@ -21,7 +74,8 @@ export class PtvPlatformsDataService extends DataService {
 
   constructor() {
     super();
-    this._fetchInterval = env.PTV_PLATFORMS_FETCH_SECONDS * 1000;
+    this._initialFetchInterval = env.PTV_PLATFORMS_INITIAL_FETCH_SECONDS * 1000;
+    this._regularFetchInterval = env.PTV_PLATFORMS_REGULAR_FETCH_SECONDS * 1000;
     this._stopIndex = 0;
     this._knownPlatforms = new Map();
     this._status = new Map(ptvStopCodes.map((x) => [x, "pending"]));
@@ -37,7 +91,7 @@ export class PtvPlatformsDataService extends DataService {
   }
 
   override onListening(): void {
-    setInterval(() => this.fetchNext(), this._fetchInterval);
+    this._scheduleNextFetch();
   }
 
   override getStatus(): object {
@@ -56,8 +110,10 @@ export class PtvPlatformsDataService extends DataService {
   }
 
   async fetchNext() {
+    this._scheduleNextFetch();
+
     const stopID = ptvStopCodes[this._stopIndex];
-    this._stopIndex++;
+    this._stopIndex = (this._stopIndex + 1) % ptvStopCodes.length;
 
     try {
       const platforms = await fetchFromPtvApi(stopID);
@@ -78,6 +134,14 @@ export class PtvPlatformsDataService extends DataService {
       );
       console.warn(err);
     }
+  }
+
+  private _scheduleNextFetch() {
+    const pending = Array.from(this._status.values()).includes("pending");
+    const interval = pending
+      ? this._initialFetchInterval
+      : this._regularFetchInterval;
+    setTimeout(() => this.fetchNext(), interval);
   }
 
   private _overallStatus(allStatuses: ("success" | "failure" | "pending")[]) {

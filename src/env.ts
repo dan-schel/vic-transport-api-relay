@@ -29,7 +29,8 @@ const envSchema = z.object({
   GTFS_REFRESH_HOURS: stringNumberSchema.default("6"),
   GTFS_REALTIME_REFRESH_SECONDS: stringNumberSchema.default("20"),
   PTV_DISRUPTIONS_REFRESH_MINUTES: stringNumberSchema.default("5"),
-  PTV_PLATFORMS_FETCH_SECONDS: stringNumberSchema.default("60"),
+  PTV_PLATFORMS_INITIAL_FETCH_SECONDS: stringNumberSchema.default("10"),
+  PTV_PLATFORMS_REGULAR_FETCH_SECONDS: stringNumberSchema.default("120"),
   SCS_PLATFORMS_REFRESH_MINUTES: stringNumberSchema.default("10"),
 
   PTV_DEV_ID: z.string(),

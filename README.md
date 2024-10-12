@@ -41,12 +41,14 @@ GTFS_REALTIME_REFRESH_SECONDS = 20
 # every 5 minutes).
 PTV_DISRUPTIONS_REFRESH_MINUTES = 5
 
-# How often, in seconds, to send a platform request to the PTV API (default:
-# every 30 seconds). Only one stop's data can be fetched at a time, so this
-# duration multiplied by the number of stops which need platform data is the
-# time it takes until every required stop has platform data (and the next round
-# of fetching begins).
-PTV_PLATFORMS_FETCH_SECONDS = 30
+# How often, in seconds, to send a platform request to the PTV API when initial
+# platform data is being populated (default: every 10 seconds).
+PTV_PLATFORMS_INITIAL_FETCH_SECONDS = 10
+
+# How often, in seconds, to send a platform request to the PTV API once an
+# attempt has been made for every stop needing platform data (default: every 120
+# seconds).
+PTV_PLATFORMS_REGULAR_FETCH_SECONDS = 120
 
 # How often, in minutes, to re-fetch platform data from the V/Line website
 # (default: every 10 minutes).
