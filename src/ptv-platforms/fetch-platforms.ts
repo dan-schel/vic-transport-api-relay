@@ -3,6 +3,7 @@ import { env } from "../env";
 import { callPtvApi } from "../utils-ptv-api";
 import { nonNull } from "@dan-schel/js-utils";
 import { cleanString, KnownPlatform } from "../utils";
+import { getOverrideFor } from "./overrides";
 
 const dirtyString = z.string().transform((s) => cleanString(s));
 
@@ -21,6 +22,8 @@ const schema = z.object({
     z.object({
       final_stop_id: z.number(),
       destination_name: dirtyString,
+      route_id: z.number(),
+      direction_id: z.number(),
     })
   ),
 });
@@ -46,9 +49,15 @@ export async function fetchFromPtvApi(
         return null;
       }
 
+      const override = getOverrideFor(
+        run.route_id,
+        run.direction_id,
+        run.final_stop_id
+      );
+
       return {
-        terminus: run.final_stop_id,
-        terminusName: run.destination_name,
+        terminus: override?.final_stop_id ?? run.final_stop_id,
+        terminusName: override?.destination_name ?? run.destination_name,
         scheduledDepartureTime: x.scheduled_departure_utc,
         platform: x.platform_number,
       };

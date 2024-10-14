@@ -41,7 +41,6 @@ export async function fetchFromVline(): Promise<KnownPlatform[]> {
   for (const serviceStr of firstServices) {
     const match = firstServicesRegex.exec(serviceStr);
     if (match == null) {
-      throw new Error(`Couldn't parse "${serviceStr}" as a first service.`);
       continue;
     }
 
@@ -52,7 +51,6 @@ export async function fetchFromVline(): Promise<KnownPlatform[]> {
   for (const serviceStr of nextServices) {
     const match = nextServicesRegex.exec(serviceStr);
     if (match == null) {
-      throw new Error(`Couldn't parse "${serviceStr}" as a next service.`);
       continue;
     }
 
