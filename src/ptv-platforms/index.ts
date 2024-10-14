@@ -1,6 +1,6 @@
 import { env } from "../env";
-import { DataService, PollingDataService } from "../service";
-import { KnownPlatform, prepareDataFolder, sha256Hash } from "../utils";
+import { DataService } from "../service";
+import { KnownPlatform, prepareDataFolder } from "../utils";
 import fsp from "fs/promises";
 import { fetchFromPtvApi } from "./fetch-platforms";
 
@@ -25,6 +25,7 @@ const ptvStopCodes = [
   1044, // Craigieburn
   1045, // Cranbourne
   1049, // Dandenong
+  1054, // Diamond Creek
   1057, // East Camberwell
   1230, // East Pakenham
   1062, // Eltham
@@ -55,6 +56,7 @@ const ptvStopCodes = [
   1036, // Caulfield
   1041, // Clifton Hill
   1051, // Darling
+  1072, // Footscray
   1093, // Heidelberg
   1134, // Mordialloc
   1141, // Newport
