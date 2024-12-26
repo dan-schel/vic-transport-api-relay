@@ -7,9 +7,17 @@ import { PtvDisruptionsDataService } from "./ptv-disruptions";
 import { DataService } from "./service";
 import { PtvPlatformsDataService } from "./ptv-platforms";
 import { ScsPlatformsDataService } from "./scs-platforms";
+import { Database } from "./db";
 
 async function main() {
   const startTime = new Date();
+
+  const database = await Database.init(env.DATABASE_URL ?? null);
+  const recentStarts = [
+    startTime,
+    ...(await database.fetchRecentStartTimes(4)),
+  ];
+  await database.recordStartTime(startTime);
 
   // Declare which data services to use.
   const dataServices: Record<string, DataService> = {};
@@ -51,6 +59,10 @@ async function main() {
       ...Object.entries(dataServices)
         .map(([key, value]) => ({ [key]: value.getStatus() }))
         .reduce((acc, val) => ({ ...acc, ...val }), {}),
+      recentStarts:
+        recentStarts.length > 1
+          ? recentStarts.map((start) => start.toISOString())
+          : undefined,
     });
   });
 

@@ -26,9 +26,18 @@ PORT = 3000
 # Flag for Node to know when it's running in production (default: development).
 NODE_ENV = "production"
 
+# Must be set to "false" to install devDependencies in Digital Ocean. Not
+# required in dev (optional).
+NPM_CONFIG_PRODUCTION = "false"
+
 # If provided, clients must pass a "relay-key" header with this value to
 # download the available data (optional).
 RELAY_KEY = "..."
+
+# The connection string to a MongoDB server, which if provided, is used to
+# persist statistics across restarts (optional).
+# e.g. "mongodb://username:password@localhost:27017/?authMechanism=DEFAULT"
+DATABASE_URL = "..."
 
 # How often, in hours, to re-download gtfs.zip (default: every 6 hours).
 GTFS_REFRESH_HOURS = 6
