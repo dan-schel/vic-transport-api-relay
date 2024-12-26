@@ -24,7 +24,9 @@ const envSchema = z.object({
   URL: z.string().default("http://localhost:3000"),
   PORT: z.string().default("3000"),
   NODE_ENV: z.string().default("development"),
+  NPM_CONFIG_PRODUCTION: z.string().default("false"),
   RELAY_KEY: z.string().nullable().default(null),
+  DATABASE_URL: z.string().optional(),
 
   GTFS_REFRESH_HOURS: stringNumberSchema.default("6"),
   GTFS_REALTIME_REFRESH_SECONDS: stringNumberSchema.default("20"),

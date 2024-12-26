@@ -125,11 +125,15 @@ function formatServiceStatus(serviceName, service) {
     if (value == null) {
       html += `<p><i>&lt;null&gt;</i></p>`;
     } else if (field === "url") {
-      html += `<div class="url"><a href="${value}">${value}</a>${
-        relayKey
-          ? `<button onClick="downloadFile('${value}')">Download</button>`
-          : ""
-      }</div>`;
+      const link = relayKey
+        ? `<a href="javascript:viewFile('${value}')">${value}</a>`
+        : `<a href="${value}">${value}</a>`;
+
+      const downloadButton = relayKey
+        ? `<button onClick="downloadFile('${value}')">Download</button>`
+        : "";
+
+      html += `<div class="url">${link}${downloadButton}</div>`;
     } else if (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/.test(value)) {
       html += `<p>${formatDate(new Date(value))}</p>`;
     } else {
@@ -142,7 +146,7 @@ function formatServiceStatus(serviceName, service) {
   return html;
 }
 
-async function downloadFile(url) {
+async function withBlobUrl(url, callback) {
   const response = await fetch(url, { headers: { "relay-key": relayKey } });
 
   if (response.status === 401) {
@@ -156,12 +160,26 @@ async function downloadFile(url) {
   const blob = await response.blob();
   const blobUrl = URL.createObjectURL(blob);
 
-  const link = document.createElement("a");
-  link.href = blobUrl;
-  link.setAttribute("download", url.split("/").at(-1));
-  link.click();
+  callback(blobUrl);
 
   URL.revokeObjectURL(blobUrl);
+}
+
+async function downloadFile(url) {
+  await withBlobUrl(url, (blobUrl) => {
+    const fileName = url.split("/").at(-1);
+
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.setAttribute("download", fileName);
+    link.click();
+  });
+}
+
+async function viewFile(url) {
+  await withBlobUrl(url, (blobUrl) => {
+    window.open(blobUrl, "_blank");
+  });
 }
 
 function splitCamelCase(str) {
