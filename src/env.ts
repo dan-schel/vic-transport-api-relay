@@ -31,6 +31,9 @@ const envSchema = z.object({
   GTFS_REFRESH_HOURS: stringNumberSchema.default("6"),
   GTFS_REALTIME_REFRESH_SECONDS: stringNumberSchema.default("20"),
   PTV_DISRUPTIONS_REFRESH_MINUTES: stringNumberSchema.default("5"),
+  PTV_DISRUPTION_DETAILS_LIMIT_WINDOW_MINUTES: stringNumberSchema.default("60"),
+  PTV_DISRUPTION_DETAILS_LIMIT_COUNT: stringNumberSchema.default("10"),
+  PTV_DISRUPTION_DETAILS_CACHE_MINUTES: stringNumberSchema.default("120"),
   PTV_PLATFORMS_INITIAL_FETCH_SECONDS: stringNumberSchema.default("10"),
   PTV_PLATFORMS_REGULAR_FETCH_SECONDS: stringNumberSchema.default("120"),
   SCS_PLATFORMS_REFRESH_MINUTES: stringNumberSchema.default("10"),
@@ -42,6 +45,7 @@ const envSchema = z.object({
   GTFS_ENABLED: stringBooleanSchema.default("true"),
   GTFS_REALTIME_ENABLED: stringBooleanSchema.default("true"),
   PTV_DISRUPTIONS_ENABLED: stringBooleanSchema.default("true"),
+  PTV_DISRUPTION_DETAILS_ENABLED: stringBooleanSchema.default("true"),
   PTV_PLATFORMS_ENABLED: stringBooleanSchema.default("true"),
   SCS_PLATFORMS_ENABLED: stringBooleanSchema.default("true"),
 });

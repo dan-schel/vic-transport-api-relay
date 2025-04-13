@@ -8,6 +8,7 @@ import { DataService } from "./service";
 import { PtvPlatformsDataService } from "./ptv-platforms";
 import { ScsPlatformsDataService } from "./scs-platforms";
 import { Database } from "./db";
+import { PtvDisruptionDetailsDataService } from "./ptv-disruption-details";
 
 async function main() {
   const startTime = new Date();
@@ -29,6 +30,10 @@ async function main() {
   }
   if (env.PTV_DISRUPTIONS_ENABLED) {
     dataServices["ptvDisruptions"] = new PtvDisruptionsDataService();
+  }
+  if (env.PTV_DISRUPTION_DETAILS_ENABLED) {
+    dataServices["ptvDisruptionDetails"] =
+      new PtvDisruptionDetailsDataService();
   }
   if (env.PTV_PLATFORMS_ENABLED) {
     dataServices["ptvPlatforms"] = new PtvPlatformsDataService();
@@ -68,6 +73,26 @@ async function main() {
 
   // Block access to the data folder unless the request is authorized.
   app.use(authMiddleware, express.static("./data"));
+
+  // PTV Disruption Details is fetched on-demand only, so handle those requests.
+  //
+  // TODO: Would be nice if this was done in a generic way, or maybe we should
+  // consider PtvDisruptionDetailsDataService to NOT be a data service and be
+  // something else? (Although we still want it to report its status like a data
+  // service.)
+  app.get("/ptv-disruption-details", authMiddleware, async (req, res) => {
+    const service = dataServices["ptvDisruptionDetails"];
+    if (
+      service == null ||
+      !(service instanceof PtvDisruptionDetailsDataService)
+    ) {
+      res.json({ error: true });
+      return;
+    }
+
+    const response = await service.onRequest(req);
+    res.json(response ?? { error: true });
+  });
 
   // Start listening on the specified port and run onListening for each data
   // service.

@@ -4,7 +4,7 @@ Interfaces with Victorian transport APIs for [TrainQuery](https://github.com/dan
 
 The server periodically downloads [GTFS data from Victoria's Department of Transport and Planning](https://opendata.transport.vic.gov.au/dataset/gtfs-schedule), strips out the files that aren't needed by TrainQuery (e.g. bus timetables, geographic data), and makes the optimized zip file available for download at `/gtfs.zip`.
 
-It also makes [GTFS realtime data](https://opendata.transport.vic.gov.au/dataset/gtfs-realtime) available at `/gtfs-realtime.json`, disruptions from the [PTV API](https://www.ptv.vic.gov.au/footer/data-and-reporting/datasets/ptv-timetable-api/) available at `/ptv-disruptions.json`, and platform information from a combination of sources available at `/ptv-platforms.json` and `/scs-platforms.json`.
+It also makes [GTFS realtime data](https://opendata.transport.vic.gov.au/dataset/gtfs-realtime) available at `/gtfs-realtime.json`, disruptions from the [PTV API](https://www.ptv.vic.gov.au/footer/data-and-reporting/datasets/ptv-timetable-api/) available at `/ptv-disruptions.json`, and platform information from a combination of sources available at `/ptv-platforms.json` and `/scs-platforms.json`. Further disruption details can be requested on-demand using the `/ptv-disruption-details` endpoint.
 
 **Note:** Assumes a Linux/MacOS running environment (i.e. the system must be able to execute a bash script, with tools such as `awk`, `curl`, `sha256sum`, `zip`, etc. available).
 
@@ -50,6 +50,20 @@ GTFS_REALTIME_REFRESH_SECONDS = 20
 # every 5 minutes).
 PTV_DISRUPTIONS_REFRESH_MINUTES = 5
 
+# The window size, in minutes, that is considered when deciding when to rate
+# limit ourselves making further requests to PTV (default: 60 minutes). During
+# rate-limiting, the server will still happily return cached responses, it just
+# won't make any new fetches.
+PTV_DISRUPTION_DETAILS_LIMIT_WINDOW_MINUTES = 60
+
+# How many requests must be made within the window before further requests are
+# refused (default: 10 requests).
+PTV_DISRUPTION_DETAILS_LIMIT_COUNT = 10
+
+# How long, in minutes, to cache the disruption details fetched from the PTV
+# website (default: 120 minutes).
+PTV_DISRUPTION_DETAILS_CACHE_MINUTES = 120
+
 # How often, in seconds, to send a platform request to the PTV API when initial
 # platform data is being populated (default: every 10 seconds).
 PTV_PLATFORMS_INITIAL_FETCH_SECONDS = 10
@@ -89,6 +103,10 @@ PTV_PLATFORMS_ENABLED = true
 
 # Can be set to false to disable SCS Platforms scraping (default: true).
 SCS_PLATFORMS_ENABLED = true
+
+# Can be set to false to disable PTV disruption details scraping (default:
+# true).
+PTV_DISRUPTION_DETAILS_ENABLED = false
 ```
 
 4. Run `npm start` to start the server.
