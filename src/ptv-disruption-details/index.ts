@@ -9,7 +9,7 @@ type Response = {
 };
 
 type ResponseStats = {
-  date: Date;
+  time: Date;
   outcome: "cache-miss" | "cache-hit" | "error" | "rate-limited";
 };
 
@@ -23,16 +23,35 @@ type CachedResponse = {
 const responseStatsCount = 100;
 
 export class PtvDisruptionDetailsDataService extends DataService {
-  private readonly _responseStats: ResponseStats[] = [];
   private readonly _cachedResponses: CachedResponse[] = [];
+  private readonly _realRequestTimes: Date[] = [];
+  private readonly _responseStats: ResponseStats[] = [];
 
   // Do nothing until a request is made.
   override async init(): Promise<void> {}
   override onListening(): void {}
 
   override getStatus(): object {
+    const rateLimitActivated = this._isRateLimited() ? "Activated" : "OK";
+    const windowCount = env.PTV_DISRUPTION_DETAILS_LIMIT_COUNT;
+    const realCount = this._rateLimitCounterValue();
+
+    const attempts = this._responseStats.filter(
+      (x) => x.outcome === "error" || x.outcome === "cache-miss"
+    ).length;
+    const errors = this._responseStats.filter(
+      (x) => x.outcome === "error"
+    ).length;
+    const lastError = this._responseStats
+      .filter((x) => x.outcome === "error")
+      .at(-1)?.time;
+
     return {
-      status: "ok",
+      status: this._getOverallStatus(),
+      lastRealFetch: this._realRequestTimes.at(-1)?.toISOString() ?? null,
+      lastError: lastError ?? null,
+      rateLimiter: `${rateLimitActivated} (${realCount} of ${windowCount})`,
+      errorRate: `${errors} of the last ${attempts} attempt(s)`,
     };
   }
 
@@ -58,7 +77,7 @@ export class PtvDisruptionDetailsDataService extends DataService {
     if (cache != null) {
       return {
         details: cache,
-        stats: { date: new Date(), outcome: "cache-hit" },
+        stats: { time: new Date(), outcome: "cache-hit" },
       };
     }
 
@@ -66,17 +85,18 @@ export class PtvDisruptionDetailsDataService extends DataService {
     if (this._isRateLimited()) {
       return {
         details: null,
-        stats: { date: new Date(), outcome: "rate-limited" },
+        stats: { time: new Date(), outcome: "rate-limited" },
       };
     }
 
     try {
       // Then, attempt to fetch the details.
+      this._logRealRequest();
       const details = await fetchDetails(url);
       this._cacheResponse(url, details);
       return {
         details,
-        stats: { date: new Date(), outcome: "cache-miss" },
+        stats: { time: new Date(), outcome: "cache-miss" },
       };
     } catch (err) {
       // If it fails, log the error.
@@ -84,7 +104,7 @@ export class PtvDisruptionDetailsDataService extends DataService {
       console.warn(err);
       return {
         details: null,
-        stats: { date: new Date(), outcome: "error" },
+        stats: { time: new Date(), outcome: "error" },
       };
     }
   }
@@ -94,6 +114,34 @@ export class PtvDisruptionDetailsDataService extends DataService {
       (res) => res.url === url && res.expiry > new Date()
     );
     return cached?.details ?? null;
+  }
+
+  private _isRateLimited(): boolean {
+    return (
+      this._rateLimitCounterValue() >= env.PTV_DISRUPTION_DETAILS_LIMIT_COUNT
+    );
+  }
+
+  private _rateLimitCounterValue(): number {
+    const limitWindowMs =
+      env.PTV_DISRUPTION_DETAILS_LIMIT_WINDOW_MINUTES * 60 * 1000;
+    const startOfLimitWindow = new Date(Date.now() - limitWindowMs);
+    return this._realRequestTimes.filter((time) => time > startOfLimitWindow)
+      .length;
+  }
+
+  private _getOverallStatus() {
+    if (this._responseStats.length === 0) {
+      return "unused";
+    } else if (this._responseStats.every((x) => x.outcome === "error")) {
+      return "dead";
+    } else if (this._responseStats.some((x) => x.outcome === "error")) {
+      return "someErrors";
+    } else if (this._isRateLimited()) {
+      return "rateLimited";
+    } else {
+      return "healthy";
+    }
   }
 
   private _cacheResponse(url: string, details: string) {
@@ -110,16 +158,14 @@ export class PtvDisruptionDetailsDataService extends DataService {
     }
   }
 
-  private _isRateLimited(): boolean {
-    const startOfLimitWindow = new Date(
-      Date.now() - env.PTV_DISRUPTION_DETAILS_LIMIT_WINDOW_MINUTES * 60 * 1000
-    );
+  private _logRealRequest() {
+    this._realRequestTimes.push(new Date());
 
-    const recentRealRequests = this._responseStats.filter(
-      (stat) => stat.date > startOfLimitWindow && stat.outcome === "cache-miss"
-    );
-
-    return recentRealRequests.length >= env.PTV_DISRUPTION_DETAILS_LIMIT_COUNT;
+    while (
+      this._realRequestTimes.length > env.PTV_DISRUPTION_DETAILS_LIMIT_COUNT
+    ) {
+      this._realRequestTimes.shift();
+    }
   }
 
   private _logResponse(stats: ResponseStats) {
