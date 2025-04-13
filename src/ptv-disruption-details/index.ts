@@ -1,8 +1,7 @@
-import { DataService, PollingDataService } from "../service";
+import { DataService } from "../service";
 import express from "express";
 import { fetchDetails } from "./fetch-details";
 import { env } from "../env";
-import { removeIf } from "@dan-schel/js-utils";
 
 type Response = {
   details: string | null;
@@ -32,7 +31,9 @@ export class PtvDisruptionDetailsDataService extends DataService {
   override onListening(): void {}
 
   override getStatus(): object {
-    throw new Error("Method not implemented.");
+    return {
+      status: "ok",
+    };
   }
 
   async onRequest(req: express.Request): Promise<object | null> {
