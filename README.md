@@ -106,7 +106,7 @@ SCS_PLATFORMS_ENABLED = true
 
 # Can be set to false to disable PTV disruption details scraping (default:
 # true).
-PTV_DISRUPTION_DETAILS_ENABLED = false
+PTV_DISRUPTION_DETAILS_ENABLED = true
 ```
 
 4. Run `npm start` to start the server.
