@@ -100,7 +100,7 @@ export class PtvDisruptionDetailsDataService extends DataService {
       };
     } catch (err) {
       // If it fails, log the error.
-      console.warn(`Failed to fetch disruption details for ${url}.`);
+      console.warn(`Failed to fetch disruption details for "${url}".`);
       console.warn(err);
       return {
         details: null,
