@@ -51,13 +51,13 @@ GTFS_REALTIME_REFRESH_SECONDS = 20
 PTV_DISRUPTIONS_REFRESH_MINUTES = 5
 
 # The window size, in minutes, that is considered when deciding when to rate
-# limit ourselves making further requests to PTV. During rate-limiting, the
-# server will still happily return cached responses, it just won't make any new
-# fetches.
+# limit ourselves making further requests to PTV (default: 60 minutes). During
+# rate-limiting, the server will still happily return cached responses, it just
+# won't make any new fetches.
 PTV_DISRUPTION_DETAILS_LIMIT_WINDOW_MINUTES = 60
 
 # How many requests must be made within the window before further requests are
-# refused.
+# refused (default: 10 requests).
 PTV_DISRUPTION_DETAILS_LIMIT_COUNT = 10
 
 # How long, in minutes, to cache the disruption details fetched from the PTV
