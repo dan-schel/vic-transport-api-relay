@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-require-imports */
 import * as $protobuf from "protobufjs";
 import Long = require("long");
 /** Namespace transit_realtime. */
