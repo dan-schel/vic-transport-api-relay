@@ -21,14 +21,14 @@ export async function fetchFromVline(): Promise<KnownPlatform[]> {
   const firstServices = html
     .querySelectorAll(firstServicesQuery)
     .map((x) => cleanString(x.innerText));
-  if (firstServices.length == 0) {
+  if (firstServices.length === 0) {
     throw new Error(`Nothing matches "${firstServices}" query.`);
   }
 
   const nextServices = html
     .querySelectorAll(nextServicesQuery)
     .map((x) => cleanString(x.innerText));
-  if (nextServices.length == 0) {
+  if (nextServices.length === 0) {
     throw new Error(`Nothing matches "${nextServicesQuery}" query.`);
   }
 
@@ -60,7 +60,7 @@ export async function fetchFromVline(): Promise<KnownPlatform[]> {
 
   const uniqueResult = unique(
     rawResult,
-    (a, b) => a.timeStr === b.timeStr && a.terminusName === b.terminusName
+    (a, b) => a.timeStr === b.timeStr && a.terminusName === b.terminusName,
   );
 
   const result: KnownPlatform[] = uniqueResult.map((x) => ({
@@ -86,7 +86,7 @@ function guessFullDateTime(timeStr: string): Date {
   const eighteenHours = 18 * 60 * 60 * 1000;
 
   const bestGuess = possibleDates.find(
-    (x) => x.getTime() > now - sixHours && x.getTime() <= now + eighteenHours
+    (x) => x.getTime() > now - sixHours && x.getTime() <= now + eighteenHours,
   );
 
   return itsOk(bestGuess);
@@ -96,7 +96,7 @@ function processPlatformStr(platformStr: string): string {
   const id = platformStr.toLowerCase();
 
   // If no A/B is provided, assume A?? (Except platform 1.)
-  if (id != "1" && /^[0-9]+$/g.test(id)) {
+  if (id !== "1" && /^[0-9]+$/g.test(id)) {
     return `${id}a`;
   }
 

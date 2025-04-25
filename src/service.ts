@@ -20,11 +20,15 @@ export abstract class PollingDataService extends DataService {
   private _hash: string | null = null;
   private _flakyCountdown: number = 0;
 
-  constructor(private _dataName: string, private _pollMillis: number) {
+  constructor(
+    private _dataName: string,
+    private _pollMillis: number,
+  ) {
     super();
   }
 
   override async init() {
+    // eslint-disable-next-line no-console
     console.log(`Downloading initial ${this._dataName}...`);
 
     this._attemptedAt = new Date();

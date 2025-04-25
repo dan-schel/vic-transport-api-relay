@@ -1,0 +1,5 @@
+/node_modules/
+.temp*/
+/data/
+/src/gtfs-realtime/proto.js
+/src/gtfs-realtime/proto.d.ts

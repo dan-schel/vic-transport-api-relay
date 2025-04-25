@@ -1,3 +1,5 @@
+/* global window, document, setInterval, fetch, URL, alert */
+
 const acronyms = ["URL", "API", "PTV", "GTFS", "SCS"];
 
 const loading = document.querySelector(".loading");
@@ -12,7 +14,7 @@ let data = null;
 
 relayKeyInput.addEventListener("input", (event) => {
   relayKey = event.target.value;
-  const changed = (oldRelayKey.length == 0) !== (relayKey.length == 0);
+  const changed = (oldRelayKey.length === 0) !== (relayKey.length === 0);
   oldRelayKey = relayKey;
   if (changed) {
     render(data);
@@ -44,7 +46,7 @@ async function render(data) {
   let html = "";
 
   html += `<div class="fields"><p>Server startup:</p><p>${formatDate(
-    new Date(data.startTime)
+    new Date(data.startTime),
   )}</p></div>`;
 
   keyAlert.style.display = !data.requiresRelayKey ? "block" : "none";
@@ -82,7 +84,7 @@ function formatDate(date, showRelative = true) {
   const relative = getRelativeDate(date);
   const relativeStr = new Intl.RelativeTimeFormat("en").format(
     Math.trunc(relative.value),
-    relative.unit
+    relative.unit,
   );
 
   return `${relativeStr}<br>(${weekdayStr} ${dateStr} at ${timeStr})`;
@@ -107,7 +109,7 @@ function formatServiceStatus(serviceName, service) {
 
   if ("status" in service) {
     html += `<p class="service-status ${service.status}">${sentenceCase(
-      service.status
+      service.status,
     )}</p>`;
   }
 
@@ -165,6 +167,7 @@ async function withBlobUrl(url, callback) {
   URL.revokeObjectURL(blobUrl);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function downloadFile(url) {
   await withBlobUrl(url, (blobUrl) => {
     const fileName = url.split("/").at(-1);
@@ -176,6 +179,7 @@ async function downloadFile(url) {
   });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function viewFile(url) {
   await withBlobUrl(url, (blobUrl) => {
     window.open(blobUrl, "_blank");
@@ -191,9 +195,10 @@ function sentenceCase(str) {
     .split(" ")
     .map((word, i) =>
       capitalizeAcronyms(
-        (i == 0 ? word.charAt(0).toUpperCase() : word.charAt(0).toLowerCase()) +
-          word.slice(1)
-      )
+        (i === 0
+          ? word.charAt(0).toUpperCase()
+          : word.charAt(0).toLowerCase()) + word.slice(1),
+      ),
     )
     .join(" ");
 }
@@ -202,7 +207,7 @@ function titleCase(str) {
   return splitCamelCase(str)
     .split(" ")
     .map((word) =>
-      capitalizeAcronyms(word.charAt(0).toUpperCase() + word.slice(1))
+      capitalizeAcronyms(word.charAt(0).toUpperCase() + word.slice(1)),
     )
     .join(" ");
 }

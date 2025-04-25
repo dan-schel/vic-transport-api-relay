@@ -24,12 +24,12 @@ const schema = z.object({
       destination_name: dirtyString,
       route_id: z.number(),
       direction_id: z.number(),
-    })
+    }),
   ),
 });
 
 export async function fetchFromPtvApi(
-  ptvStopID: number
+  ptvStopID: number,
 ): Promise<KnownPlatform[]> {
   const json = await callPtvApi(
     `/v3/departures/route_type/0/stop/${ptvStopID}`,
@@ -37,7 +37,7 @@ export async function fetchFromPtvApi(
       expand: "All",
     },
     env.PTV_DEV_ID,
-    env.PTV_DEV_KEY
+    env.PTV_DEV_KEY,
   );
 
   const rawData = schema.parse(json);
@@ -52,7 +52,7 @@ export async function fetchFromPtvApi(
       const override = getOverrideFor(
         run.route_id,
         run.direction_id,
-        run.final_stop_id
+        run.final_stop_id,
       );
 
       return {
@@ -64,12 +64,12 @@ export async function fetchFromPtvApi(
     })
     .filter(nonNull)
     .filter(
-      (x) => x.scheduledDepartureTime.getTime() > Date.now() - backBufferMillis
+      (x) => x.scheduledDepartureTime.getTime() > Date.now() - backBufferMillis,
     );
 
   result.sort(
     (a, b) =>
-      a.scheduledDepartureTime.getTime() - b.scheduledDepartureTime.getTime()
+      a.scheduledDepartureTime.getTime() - b.scheduledDepartureTime.getTime(),
   );
 
   return result;
