@@ -5,7 +5,7 @@
     "lint": "eslint . --max-warnings 0 && tsc --noEmit -p src/tsconfig.json",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
-    "regenerate-proto": "rm src/gtfs-realtime/proto.js && rm src/gtfs-realtime/proto.d.ts && pbjs -t static-module -o src/gtfs-realtime/proto.js src/gtfs-realtime/gtfs-realtime.proto && pbts -o src/gtfs-realtime/proto.d.ts src/gtfs-realtime/proto.js"
+    "regenerate-proto": "./regenerate-proto.sh"
   },
   "dependencies": {
     "@dan-schel/js-utils": "^3.2.2",
@@ -14,7 +14,7 @@
     "luxon": "^3.5.0",
     "mongodb": "^6.12.0",
     "node-html-parser": "^6.1.13",
-    "protobufjs": "^7.4.0",
+    "protobufjs": "^7.5.0",
     "tsx": "^4.19.2",
     "zod": "^3.23.8"
   },
