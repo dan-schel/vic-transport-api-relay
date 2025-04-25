@@ -15,7 +15,7 @@ export type GtfsRealtimeData = {
 
 export async function fetchRealtime(apiKey: string): Promise<GtfsRealtimeData> {
   const results = await Promise.all(
-    apis.map((api) => fetchRealtimeApi(api, apiKey))
+    apis.map((api) => fetchRealtimeApi(api, apiKey)),
   );
 
   const combined = results.map((e) => e.entity).flat();
@@ -28,7 +28,7 @@ export async function fetchRealtime(apiKey: string): Promise<GtfsRealtimeData> {
 
 async function fetchRealtimeApi(
   api: string,
-  apiKey: string
+  apiKey: string,
 ): Promise<transit_realtime.FeedMessage> {
   const response = await fetch(api, {
     headers: {

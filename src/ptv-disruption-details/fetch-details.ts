@@ -35,7 +35,7 @@ export async function fetchDetails(url: string): Promise<FetchDetailsResult> {
   try {
     const json = schema.parse(JSON.parse(text));
     return { details: json.content };
-  } catch (err) {
+  } catch {
     return {
       error: "parsing-error",
       parsingError: `Content of "data-init-props" is not the expected JSON.`,

@@ -14,7 +14,7 @@ export async function callPtvApi(
   api: string,
   args: Record<string, string | string[]>,
   devID: string,
-  devKey: string
+  devKey: string,
 ): Promise<unknown> {
   const url = createPtvUrl(api, args, devID, devKey);
   const response = await fetch(url);
@@ -38,7 +38,7 @@ export function createPtvUrl(
   api: string,
   args: Record<string, string | string[]>,
   devID: string,
-  devKey: string
+  devKey: string,
 ): URL {
   const url = new URL(ptvOrigin);
   url.pathname = api;

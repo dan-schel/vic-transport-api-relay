@@ -44,7 +44,7 @@ async function main() {
 
   // Initialize all data services.
   await Promise.all(
-    Object.values(dataServices).map((service) => service.init())
+    Object.values(dataServices).map((service) => service.init()),
   );
 
   // Create express server to serve gtfs.zip and other static files.
@@ -97,6 +97,7 @@ async function main() {
   // Start listening on the specified port and run onListening for each data
   // service.
   app.listen(port, () => {
+    // eslint-disable-next-line no-console
     console.log(`Listening on port ${port}.`);
   });
   Object.values(dataServices).forEach((service) => service.onListening());

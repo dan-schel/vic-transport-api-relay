@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export class Cache<T extends {}> {
   private readonly _cache: Map<string, { data: T; expiry: Date }>;
 

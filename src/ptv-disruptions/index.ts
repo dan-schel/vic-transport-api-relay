@@ -18,7 +18,7 @@ export class PtvDisruptionsDataService extends PollingDataService {
         route_types: ["0", "3"],
       },
       env.PTV_DEV_ID,
-      env.PTV_DEV_KEY
+      env.PTV_DEV_KEY,
     );
 
     const jsonStr = JSON.stringify(json, null, 2);

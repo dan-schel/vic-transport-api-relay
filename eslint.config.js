@@ -30,5 +30,5 @@ export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   prettier,
-  customRules
+  customRules,
 );

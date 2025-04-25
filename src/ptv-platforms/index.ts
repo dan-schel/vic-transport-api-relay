@@ -40,9 +40,9 @@ export class PtvPlatformsDataService extends DataService {
 
   override getStatus(): object {
     const allStatuses = Array.from(this._status.values());
-    const successes = allStatuses.filter((x) => x == "success").length;
-    const pendings = allStatuses.filter((x) => x == "pending").length;
-    const failures = allStatuses.filter((x) => x == "failure").length;
+    const successes = allStatuses.filter((x) => x === "success").length;
+    const pendings = allStatuses.filter((x) => x === "pending").length;
+    const failures = allStatuses.filter((x) => x === "failure").length;
 
     return {
       status: this._overallStatus(allStatuses),
@@ -76,7 +76,7 @@ export class PtvPlatformsDataService extends DataService {
       this._status.set(stopID, "failure");
       this._failedAt = new Date();
       console.warn(
-        `Failed to fetch platform data for stop ${stopID}. Retaining old data if available.`
+        `Failed to fetch platform data for stop ${stopID}. Retaining old data if available.`,
       );
       console.warn(err);
     }
@@ -91,11 +91,11 @@ export class PtvPlatformsDataService extends DataService {
   }
 
   private _overallStatus(allStatuses: ("success" | "failure" | "pending")[]) {
-    if (allStatuses.every((x) => x != "success")) {
+    if (allStatuses.every((x) => x !== "success")) {
       return "dead";
-    } else if (allStatuses.some((x) => x == "failure")) {
+    } else if (allStatuses.some((x) => x === "failure")) {
       return "flaky";
-    } else if (allStatuses.some((x) => x == "pending")) {
+    } else if (allStatuses.some((x) => x === "pending")) {
       return "populating";
     } else {
       return "healthy";

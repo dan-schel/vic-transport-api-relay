@@ -22,12 +22,12 @@ export type Result = { details: string } | { error: ErrorType };
 
 export class PtvDisruptionDetailsDataService extends DataService {
   private readonly _cache = new Cache<Result>(
-    env.PTV_DISRUPTION_DETAILS_CACHE_MINUTES * 60 * 1000
+    env.PTV_DISRUPTION_DETAILS_CACHE_MINUTES * 60 * 1000,
   );
 
   private readonly _rateLimiter = new RateLimiter(
     env.PTV_DISRUPTION_DETAILS_LIMIT_COUNT,
-    env.PTV_DISRUPTION_DETAILS_LIMIT_WINDOW_MINUTES * 60 * 1000
+    env.PTV_DISRUPTION_DETAILS_LIMIT_WINDOW_MINUTES * 60 * 1000,
   );
 
   private readonly _fetchResults: FetchDetailsResult[] = [];
@@ -118,7 +118,7 @@ export class PtvDisruptionDetailsDataService extends DataService {
 
   private _countSuccessfulResults() {
     return this._fetchResults.filter(
-      (r) => "details" in r || r.error === "not-found"
+      (r) => "details" in r || r.error === "not-found",
     ).length;
   }
 

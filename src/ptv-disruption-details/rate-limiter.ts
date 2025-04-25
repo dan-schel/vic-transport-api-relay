@@ -1,7 +1,10 @@
 export class RateLimiter {
   private readonly _occurances: Date[];
 
-  constructor(readonly windowSize: number, private readonly _windowMs: number) {
+  constructor(
+    readonly windowSize: number,
+    private readonly _windowMs: number,
+  ) {
     this._occurances = [];
   }
 

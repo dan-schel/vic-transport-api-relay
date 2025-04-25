@@ -75,7 +75,7 @@ const overrides: OverrideList = {
 export function getOverrideFor(
   routeID: number,
   directionID: number,
-  finalStopID: number
+  finalStopID: number,
 ): Override | null {
   return overrides[routeID]?.[directionID]?.[finalStopID] ?? null;
 }
