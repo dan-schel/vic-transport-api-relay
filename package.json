@@ -8,27 +8,27 @@
     "regenerate-proto": "./regenerate-proto.sh"
   },
   "dependencies": {
-    "@dan-schel/js-utils": "4.1.1",
+    "@dan-schel/js-utils": "4.2.0",
     "dotenv": "16.5.0",
     "express": "5.1.0",
     "luxon": "3.6.1",
-    "mongodb": "6.16.0",
+    "mongodb": "6.17.0",
     "node-html-parser": "7.0.1",
     "protobufjs": "7.5.3",
-    "tsx": "4.19.4",
-    "zod": "3.25.49"
+    "tsx": "4.20.3",
+    "zod": "3.25.67"
   },
   "devDependencies": {
-    "@eslint/js": "9.28.0",
-    "@types/express": "5.0.2",
+    "@eslint/js": "9.29.0",
+    "@types/express": "5.0.3",
     "@types/luxon": "3.6.2",
     "cross-env": "7.0.3",
-    "eslint": "9.28.0",
+    "eslint": "9.29.0",
     "eslint-config-prettier": "10.1.5",
-    "eslint-plugin-prettier": "5.4.1",
-    "prettier": "3.5.3",
+    "eslint-plugin-prettier": "5.5.1",
+    "prettier": "3.6.1",
     "protobufjs-cli": "1.2.0",
     "typescript": "5.8.3",
-    "typescript-eslint": "8.33.1"
+    "typescript-eslint": "8.35.0"
   }
 }
