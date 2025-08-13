@@ -2,7 +2,7 @@ import { parseFloatNull } from "@dan-schel/js-utils";
 import { configDotenv } from "dotenv";
 import { z } from "zod";
 
-configDotenv();
+configDotenv({ quiet: true });
 
 const stringNumberSchema = z.string().transform((x, ctx) => {
   const result = parseFloatNull(x);

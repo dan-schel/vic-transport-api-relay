@@ -8,6 +8,10 @@
 
 set -euo pipefail
 gtfs_url="https://data.ptv.vic.gov.au/downloads/gtfs.zip"
+
+# TODO: Might need to switch to this URL soon, but I want to confirm it's stable first.
+# gtfs_url="https://opendata.transport.vic.gov.au/dataset/3f4e292e-7f8a-4ffe-831f-1953be0fe448/resource/e4966d78-dc64-4a1d-a751-2470c9eaf034/download/gtfs.zip"
+
 destination="data/gtfs.zip"
 
 temp_folder=".temp-$(date +%s%3N)"
