@@ -2,9 +2,9 @@ import { transit_realtime } from "./proto";
 import { nonNull } from "@dan-schel/js-utils";
 
 const apis = [
-  "https://data-exchange-api.vicroads.vic.gov.au/opendata/v1/gtfsr/metrotrain-tripupdates",
-  "https://data-exchange-api.vicroads.vic.gov.au/opendata/v1/gtfsr/metrotrain-servicealerts",
-  "https://data-exchange-api.vicroads.vic.gov.au/opendata/v1/gtfsr/metrotrain-vehicleposition-updates",
+  "https://api.opendata.transport.vic.gov.au/opendata/public-transport/gtfs/realtime/v1/metro/trip-updates",
+  "https://api.opendata.transport.vic.gov.au/opendata/public-transport/gtfs/realtime/v1/metro/vehicle-positions",
+  "https://api.opendata.transport.vic.gov.au/opendata/public-transport/gtfs/realtime/v1/metro/service-alerts",
 ];
 
 export type GtfsRealtimeData = {
@@ -32,7 +32,7 @@ async function fetchRealtimeApi(
 ): Promise<transit_realtime.FeedMessage> {
   const response = await fetch(api, {
     headers: {
-      "Ocp-Apim-Subscription-Key": apiKey,
+      KeyId: apiKey,
     },
   });
   const buffer = await response.arrayBuffer();
