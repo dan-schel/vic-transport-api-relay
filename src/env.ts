@@ -37,6 +37,7 @@ const envSchema = z.object({
   PTV_PLATFORMS_INITIAL_FETCH_SECONDS: stringNumberSchema.default("10"),
   PTV_PLATFORMS_REGULAR_FETCH_SECONDS: stringNumberSchema.default("120"),
   SCS_PLATFORMS_REFRESH_MINUTES: stringNumberSchema.default("10"),
+  PTV_STOPS_REFRESH_MINUTES: stringNumberSchema.default("60"),
 
   PTV_DEV_ID: z.string(),
   PTV_DEV_KEY: z.string(),
@@ -48,6 +49,7 @@ const envSchema = z.object({
   PTV_DISRUPTION_DETAILS_ENABLED: stringBooleanSchema.default("true"),
   PTV_PLATFORMS_ENABLED: stringBooleanSchema.default("true"),
   SCS_PLATFORMS_ENABLED: stringBooleanSchema.default("true"),
+  PTV_STOPS_ENABLED: stringBooleanSchema.default("true"),
 });
 
 export const env = envSchema.parse(process.env);

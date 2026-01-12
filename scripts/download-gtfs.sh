@@ -30,7 +30,22 @@ mkdir $temp_folder/suburban
 unzip -q $temp_folder/1/google_transit.zip -d $temp_folder/regional
 unzip -q $temp_folder/2/google_transit.zip -d $temp_folder/suburban
 
-hash=$(cat $temp_folder/regional/calendar.txt $temp_folder/regional/calendar_dates.txt $temp_folder/regional/stop_times.txt $temp_folder/regional/trips.txt $temp_folder/suburban/calendar.txt $temp_folder/suburban/calendar_dates.txt $temp_folder/suburban/stop_times.txt $temp_folder/suburban/trips.txt | sha256sum | awk '{print $1;}')
+hash=$(cat \
+  $temp_folder/regional/calendar.txt \
+  $temp_folder/regional/calendar_dates.txt \
+  $temp_folder/regional/routes.txt \
+  $temp_folder/regional/stop_times.txt \
+  $temp_folder/regional/stops.txt \
+  $temp_folder/regional/transfers.txt \
+  $temp_folder/regional/trips.txt \
+  $temp_folder/suburban/calendar.txt \
+  $temp_folder/suburban/calendar_dates.txt \
+  $temp_folder/suburban/routes.txt \
+  $temp_folder/suburban/stop_times.txt \
+  $temp_folder/suburban/stops.txt \
+  $temp_folder/suburban/transfers.txt \
+  $temp_folder/suburban/trips.txt \
+  | sha256sum | awk '{print $1;}')
 echo "The hash is: $hash"
 
 echo "Create \"$temp_folder/regional.zip\"..."
@@ -39,7 +54,10 @@ echo "Create \"$temp_folder/regional.zip\"..."
   zip -q -r ../regional.zip \
     calendar.txt \
     calendar_dates.txt \
+    routes.txt \
     stop_times.txt \
+    stops.txt \
+    transfers.txt \
     trips.txt
 )
 
@@ -49,7 +67,10 @@ echo "Create \"$temp_folder/suburban.zip\"..."
   zip -q -r ../suburban.zip \
     calendar.txt \
     calendar_dates.txt \
+    routes.txt \
     stop_times.txt \
+    stops.txt \
+    transfers.txt \
     trips.txt
 )
 
@@ -63,6 +84,7 @@ rm -f $destination
 )
 
 echo "Cleaning up \"$temp_folder\"..."
+chmod -R u+w $temp_folder
 rm -rf $temp_folder
 
 echo "✅ All done!"
