@@ -77,6 +77,10 @@ PTV_PLATFORMS_REGULAR_FETCH_SECONDS = 120
 # (default: every 10 minutes).
 SCS_PLATFORMS_REFRESH_MINUTES = 10
 
+# How often, in minutes, to re-fetch stops from the PTV API (default: every 60
+# minutes).
+PTV_STOPS_REFRESH_MINUTES = 60
+
 # The developer ID used to authenticate to the PTV API (required).
 PTV_DEV_ID = "..."
 
@@ -107,6 +111,10 @@ SCS_PLATFORMS_ENABLED = true
 # Can be set to false to disable PTV disruption details scraping (default:
 # true).
 PTV_DISRUPTION_DETAILS_ENABLED = true
+
+# Can be set to false to disable PTV Stops polling (default: true).
+# PTV_DEV_ID and PTV_DEV_KEY must still be provided regardless of this value.
+PTV_STOPS_ENABLED = true
 ```
 
 4. Run `npm start` to start the server.

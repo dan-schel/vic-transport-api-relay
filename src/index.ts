@@ -9,6 +9,7 @@ import { PtvPlatformsDataService } from "./ptv-platforms";
 import { ScsPlatformsDataService } from "./scs-platforms";
 import { Database } from "./db";
 import { PtvDisruptionDetailsDataService } from "./ptv-disruption-details";
+import { PtvStopsDataService } from "./ptv-stops";
 
 async function main() {
   const startTime = new Date();
@@ -40,6 +41,9 @@ async function main() {
   }
   if (env.SCS_PLATFORMS_ENABLED) {
     dataServices["scsPlatforms"] = new ScsPlatformsDataService();
+  }
+  if (env.PTV_STOPS_ENABLED) {
+    dataServices["ptvStops"] = new PtvStopsDataService();
   }
 
   // Initialize all data services.
