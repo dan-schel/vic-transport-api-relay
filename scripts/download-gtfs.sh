@@ -84,6 +84,7 @@ rm -f $destination
 )
 
 echo "Cleaning up \"$temp_folder\"..."
+chmod -R u+w $temp_folder
 rm -rf $temp_folder
 
 echo "✅ All done!"
