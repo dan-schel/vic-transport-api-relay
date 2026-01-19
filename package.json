@@ -12,7 +12,7 @@
     "dotenv": "17.2.0",
     "express": "5.1.0",
     "luxon": "3.7.1",
-    "mongodb": "6.17.0",
+    "mongodb": "7.0.0",
     "node-html-parser": "7.0.1",
     "protobufjs": "7.5.3",
     "tsx": "4.20.3",
