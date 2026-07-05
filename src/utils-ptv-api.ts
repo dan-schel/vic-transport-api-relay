@@ -1,4 +1,5 @@
 import { createHmac } from "crypto";
+import z from "zod";
 
 /** The origin for the PTV API. */
 const ptvOrigin = "https://timetableapi.ptv.vic.gov.au";
@@ -20,7 +21,10 @@ export async function callPtvApi(
   const response = await fetch(url);
 
   if (response.status !== 200) {
-    throw new Error(`PTV API responded with code ${response.status}.`);
+    const ip = await getIpAddress();
+    throw new Error(
+      `PTV API responded with code ${response.status} (my IP address: "${ip}").`,
+    );
   }
 
   return await response.json();
@@ -73,4 +77,21 @@ function signUrlPtv(devID: string, devKey: string, url: URL): URL {
   url.searchParams.append("signature", signature);
 
   return url;
+}
+
+/**
+ * Uses ipecho.io to get the public IP address of the current machine.
+ */
+async function getIpAddress() {
+  const schema = z.object({
+    ip: z.string().ip(),
+  });
+
+  try {
+    const res = await fetch("https://ipecho.io/json");
+    const data = schema.parse(await res.json());
+    return data.ip;
+  } catch {
+    return "???";
+  }
 }
