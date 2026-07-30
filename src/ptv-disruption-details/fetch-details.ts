@@ -1,10 +1,18 @@
 import { parse, HTMLElement } from "node-html-parser";
 import { z } from "zod";
 
-const query = ".js-react[data-name='LiveTravelUpdatesPage_article']";
-const schema = z.object({
-  content: z.string(),
-});
+const elementId = "__NEXT_DATA__";
+const schema = z
+  .object({
+    props: z.object({
+      pageProps: z.object({
+        disruption: z.object({
+          Article: z.string(),
+        }),
+      }),
+    }),
+  })
+  .transform((x) => ({ content: x.props.pageProps.disruption.Article }));
 
 export type FetchDetailsResult =
   | { details: string }
@@ -16,24 +24,19 @@ export async function fetchDetails(url: string): Promise<FetchDetailsResult> {
   if (fetchResult == null) return { error: "fetch-failed" };
   if ("notFound" in fetchResult) return { error: "not-found" };
 
-  const element = fetchResult.html.querySelector(query);
+  // Womp womp, they've got Cloudflare :(
+  console.log(fetchResult.html.toString());
+
+  const element = fetchResult.html.getElementById(elementId);
   if (element == null) {
     return {
       error: "parsing-error",
-      parsingError: `Nothing matches "${query}" query.`,
-    };
-  }
-
-  const text = element.getAttribute("data-init-props") ?? null;
-  if (text == null) {
-    return {
-      error: "parsing-error",
-      parsingError: `Element missing "data-init-props" attribute.`,
+      parsingError: `No element with ID "${elementId}" found.`,
     };
   }
 
   try {
-    const json = schema.parse(JSON.parse(text));
+    const json = schema.parse(JSON.parse(element.innerHTML));
     return { details: json.content };
   } catch {
     return {
