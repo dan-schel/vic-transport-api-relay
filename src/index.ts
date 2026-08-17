@@ -2,24 +2,26 @@ import express from "express";
 import { env } from "./env";
 import { authMiddleware } from "./auth";
 import { GtfsDataService } from "./gtfs";
-import { GtfsRealtimeDataService } from "./gtfs-realtime";
+import {
+  SuburbanGtfsRealtimeDataService,
+  RegionalGtfsRealtimeDataService,
+} from "./gtfs-realtime";
 import { PtvDisruptionsDataService } from "./ptv-disruptions";
 import { DataService } from "./service";
 import { PtvPlatformsDataService } from "./ptv-platforms";
 import { ScsPlatformsDataService } from "./scs-platforms";
-import { Database } from "./db";
 import { PtvDisruptionDetailsDataService } from "./ptv-disruption-details";
 import { PtvStopsDataService } from "./ptv-stops";
 
 async function main() {
   const startTime = new Date();
 
-  const database = await Database.init(env.DATABASE_URL ?? null);
-  const recentStarts = [
-    startTime,
-    ...(await database.fetchRecentStartTimes(4)),
-  ];
-  await database.recordStartTime(startTime);
+  // const database = await Database.init(env.DATABASE_URL ?? null);
+  // const recentStarts = [
+  //   startTime,
+  //   ...(await database.fetchRecentStartTimes(4)),
+  // ];
+  // await database.recordStartTime(startTime);
 
   // Declare which data services to use.
   const dataServices: Record<string, DataService> = {};
@@ -27,7 +29,10 @@ async function main() {
     dataServices["gtfs"] = new GtfsDataService();
   }
   if (env.GTFS_REALTIME_ENABLED) {
-    dataServices["gtfsRealtime"] = new GtfsRealtimeDataService();
+    dataServices["gtfsRealtimeSuburban"] =
+      new SuburbanGtfsRealtimeDataService();
+    dataServices["gtfsRealtimeRegional"] =
+      new RegionalGtfsRealtimeDataService();
   }
   if (env.PTV_DISRUPTIONS_ENABLED) {
     dataServices["ptvDisruptions"] = new PtvDisruptionsDataService();
@@ -68,10 +73,10 @@ async function main() {
       ...Object.entries(dataServices)
         .map(([key, value]) => ({ [key]: value.getStatus() }))
         .reduce((acc, val) => ({ ...acc, ...val }), {}),
-      recentStarts:
-        recentStarts.length > 1
-          ? recentStarts.map((start) => start.toISOString())
-          : undefined,
+      // recentStarts:
+      //   recentStarts.length > 1
+      //     ? recentStarts.map((start) => start.toISOString())
+      //     : undefined,
     });
   });
 

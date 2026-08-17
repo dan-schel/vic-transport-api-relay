@@ -2,7 +2,7 @@
   "type": "module",
   "scripts": {
     "start": "cross-env NODE_ENV=production TZ=\"Etc/UTC\" tsx src/index.ts",
-    "lint": "eslint . --max-warnings 0 && tsc --noEmit -p src/tsconfig.json",
+    "lint": "tsc --noEmit -p src/tsconfig.json && eslint . --max-warnings 0",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
     "regenerate-proto": "./regenerate-proto.sh"
