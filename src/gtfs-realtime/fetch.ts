@@ -1,21 +1,16 @@
 import { transit_realtime } from "./proto";
 import { nonNull } from "@dan-schel/js-utils";
 
-const apis = [
-  "https://api.opendata.transport.vic.gov.au/opendata/public-transport/gtfs/realtime/v1/metro/trip-updates",
-  "https://api.opendata.transport.vic.gov.au/opendata/public-transport/gtfs/realtime/v1/metro/vehicle-positions",
-  "https://api.opendata.transport.vic.gov.au/opendata/public-transport/gtfs/realtime/v1/metro/service-alerts",
-  "https://api.opendata.transport.vic.gov.au/opendata/public-transport/gtfs/realtime/v1/vline/trip-updates",
-  "https://api.opendata.transport.vic.gov.au/opendata/public-transport/gtfs/realtime/v1/vline/vehicle-positions",
-];
-
 export type GtfsRealtimeData = {
   tripUpdates: transit_realtime.ITripUpdate[];
   serviceAlerts: transit_realtime.IAlert[];
   vehiclePositions: transit_realtime.IVehiclePosition[];
 };
 
-export async function fetchRealtime(apiKey: string): Promise<GtfsRealtimeData> {
+export async function fetchRealtime(
+  apiKey: string,
+  apis: string[],
+): Promise<GtfsRealtimeData> {
   const results = await Promise.all(
     apis.map((api) => fetchRealtimeApi(api, apiKey)),
   );
