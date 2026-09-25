@@ -84,7 +84,7 @@ function signUrlPtv(devID: string, devKey: string, url: URL): URL {
  */
 async function getIpAddress() {
   const schema = z.object({
-    ip: z.string().ip(),
+    ip: z.union([z.ipv4(), z.ipv6()]),
   });
 
   try {
