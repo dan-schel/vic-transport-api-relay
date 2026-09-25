@@ -9,7 +9,7 @@ import { RateLimiter } from "./rate-limiter";
 const fetchResultsCount = 100;
 
 const ptvDisruptionDetailsUrl =
-  "https://ptv.vic.gov.au/live-travel-updates/article/";
+  "https://transport.vic.gov.au/disruptions/disruptions-information/article/";
 
 export type ErrorType =
   | "invalid-request"
