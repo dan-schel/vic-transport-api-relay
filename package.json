@@ -16,7 +16,7 @@
     "node-html-parser": "9.0.4",
     "protobufjs": "7.6.6",
     "tsx": "4.23.15",
-    "zod": "^4.6.5"
+    "zod": "3.25.76"
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
