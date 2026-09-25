@@ -14,7 +14,7 @@
     "luxon": "3.7.2",
     "mongodb": "7.6.0",
     "node-html-parser": "9.0.4",
-    "protobufjs": "7.6.6",
+    "protobufjs": "8.8.0",
     "tsx": "4.23.15",
     "zod": "4.6.5"
   },
